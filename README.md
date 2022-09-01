@@ -16,7 +16,7 @@ This is a 2D platform game made with Pygame
 
 - [Pygame documentation](https://www.pygame.org/docs/)
 
-- [DaFluffyPotato YOutube Channel](https://www.youtube.com/watch?v=xxRhvyZXd8I&list=PLX5fBCkxJmm3nAalPU6gGfRIFLlghRuYy)
+- [DaFluffyPotato Youtube Channel](https://www.youtube.com/watch?v=xxRhvyZXd8I&list=PLX5fBCkxJmm3nAalPU6gGfRIFLlghRuYy)
 
 - [Clear Code Youtube Channel](https://www.youtube.com/playlist?list=PL8ui5HK3oSiGXM2Pc2DahNu1xXBf7WQh-)
 
