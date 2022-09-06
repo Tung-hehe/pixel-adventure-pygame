@@ -4,6 +4,7 @@ import pygame
 
 from level import Level
 
+
 map = [
 '              ',
 '              ',
@@ -14,11 +15,10 @@ map = [
 ' XXXX       XX',
 ' XX    X  XXXX',
 '       X  XXXX',
-'  P XXXX  XXXX',
-'XXXXXXXX  XXXX']
+'  P XXXXXXXXXX',
+'XXXXXXXXXXXXXX']
 
 tileSize = (64, 64)
-playerSize = (32, 64)
 
 screenWidth = len(map[0]) * tileSize[0]
 screenHeight = len(map) * tileSize[1]
@@ -27,7 +27,7 @@ screenHeight = len(map) * tileSize[1]
 pygame.init()
 screen = pygame.display.set_mode((screenWidth,screenHeight))
 clock = pygame.time.Clock()
-level = Level(map, tileSize, playerSize)
+level = Level(map, tileSize)
 
 while True:
     for event in pygame.event.get():

@@ -5,24 +5,22 @@ from tiles import Tile
 
 class Level:
 
-    def __init__(self, map: list, tileSize: tuple, playerSize: tuple) -> None:
-        self.map = self.setupMap(map, tileSize, playerSize)
+    def __init__(self, map: list, tileSize: tuple) -> None:
+        self.map = self.setupMap(map, tileSize)
 
-    def setupMap(self, map: list, tileSize: tuple, playerSize: tuple) -> None:
+    def setupMap(self, map: list, tileSize: tuple) -> None:
         self.tiles = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
 
         for rowIndex, row in enumerate(map):
             for colIndex, tile in enumerate(row):
-
+                position = (colIndex * tileSize[0], rowIndex * tileSize[1])
                 if tile == 'X':
-                    tilePosition = (colIndex * tileSize[0], rowIndex * tileSize[1])
-                    tile = Tile(tilePosition, tileSize)
+                    tile = Tile(position, tileSize)
                     self.tiles.add(tile)
 
                 if tile == 'P':
-                    playerPosition = (colIndex * playerSize[0], rowIndex * playerSize[1])
-                    player = Player(playerPosition, playerSize)
+                    player = Player(position)
                     self.player.add(player)
 
     def horizontalMovementCollision(self) -> None:
@@ -30,24 +28,30 @@ class Level:
         player.move()
 
         for tile in self.tiles.sprites():
-            if tile.rect.colliderect(player.rect):
+            if tile.rect.colliderect(player.hitbox):
                 if player.direction.x == -1:
-                    player.rect.left = tile.rect.right
+                    player.hitbox.left = tile.rect.right
                 elif player.direction.x == 1:
-                    player.rect.right = tile.rect.left
+                    player.hitbox.right = tile.rect.left
+                player.rect.midbottom = player.hitbox.midbottom
 
     def verticalMovementCollision(self) -> None:
         player = self.player.sprite
         player.applyGravity()
 
         for tile in self.tiles.sprites():
-            if tile.rect.colliderect(player.rect):
+            if tile.rect.colliderect(player.hitbox):
                 if player.direction.y > 0:
-                    player.rect.bottom = tile.rect.top
+                    player.hitbox.bottom = tile.rect.top
                     player.direction.y = 0
+                    player.onGround = True
                 elif player.direction.y < 0:
-                    player.rect.top = tile.rect.bottom
+                    player.hitbox.top = tile.rect.bottom
                     player.direction.y = 0
+                player.rect.midbottom = player.hitbox.midbottom
+
+        if (player.onGround and player.direction.y < 0) or player.direction.y > 1:
+            player.onGround = False
 
     def update(self, screen) -> None:
         self.tiles.draw(screen)
