@@ -3,7 +3,7 @@ import random
 import pygame
 
 from .character import Character
-from .tiles import Tile
+from .tile import Tile
 
 from Source.Utils import AllCharacterConstants
 from Source.enums import (
