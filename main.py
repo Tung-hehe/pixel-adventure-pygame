@@ -13,10 +13,7 @@ class PythonPath():
         sys.path.insert(0, self.path)
 
     def __exit__(self, exc_type, exc_value, traceback):
-        try:
-            sys.path.remove(self.path)
-        except ValueError:
-            pass
+        sys.path.remove(self.path)
 
 with PythonPath(Path(__file__).absolute().parents[1]):
     from Source import Level
@@ -49,6 +46,10 @@ with PythonPath(Path(__file__).absolute().parents[1]):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
 
         screen.fill('black')
         level.update(screen)
