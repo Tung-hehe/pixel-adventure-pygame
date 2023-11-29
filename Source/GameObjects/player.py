@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pygame
 
-from utils import getSurfaceList
+from Source.Utils import Utils
+
 
 class Player(pygame.sprite.Sprite):
 
@@ -42,7 +43,7 @@ class Player(pygame.sprite.Sprite):
         self.animations = {'idle':[], 'run':[], 'jump': [], 'fall': []}
         for animation in self.animations.keys():
             characterAnimationPath = characterAnimationsPath / animation
-            self.animations[animation] = getSurfaceList(path=characterAnimationPath)
+            self.animations[animation] = Utils.getSurfaceListFromSpritesheets(path=characterAnimationPath)
 
     def getEvent(self) -> None:
         # Get event
@@ -83,9 +84,9 @@ class Player(pygame.sprite.Sprite):
         if self.facingRight:
             self.image = image
         else:
-            self.image = pygame.transform.flip(surface=image,
-                                               flip_x=True,
-                                               flip_y=False)
+            self.image = pygame.transform.flip(
+                surface=image, flip_x=True, flip_y=False
+            )
 
     def move(self) -> None:
         self.rect.x += self.direction.x * self.speed
