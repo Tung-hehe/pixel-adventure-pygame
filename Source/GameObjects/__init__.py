@@ -1,3 +1,3 @@
 from .level import Level
-from .player import Player
+from .character import Character
 from .tiles import Tile

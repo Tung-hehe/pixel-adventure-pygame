@@ -7,3 +7,4 @@ class Tile(pygame.sprite.Sprite):
         self.image = pygame.Surface(size)
         self.image.fill('#6E85B7')
         self.rect = self.image.get_rect(topleft=position)
+        return None
