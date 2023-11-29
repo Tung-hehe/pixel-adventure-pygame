@@ -5,7 +5,7 @@ import pygame
 from .character import Character
 from .tile import Tile
 
-from Source.Utils import AllCharacterConstants
+from Source.Utils import AllCharacterSettings
 from Source.enums import (
     CharacterNames,
     CharacterRelativePosition
@@ -21,7 +21,7 @@ class Level:
     def setupMap(self, map: list, tileSize: tuple) -> None:
         self.tiles = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
-        characterConstants = AllCharacterConstants[random.choice(list(CharacterNames))]
+        characterConstants = AllCharacterSettings[random.choice(list(CharacterNames))]
 
         for rowIndex, row in enumerate(map):
             for colIndex, tile in enumerate(row):

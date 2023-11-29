@@ -4,7 +4,7 @@ import pygame
 
 from Source.Utils import (
     Utils,
-    CharacterConstants
+    CharacterSettings
 )
 from Source.enums import (
     CharacterStatus,
@@ -15,9 +15,9 @@ from Source.enums import (
 
 class Character(pygame.sprite.Sprite):
 
-    def __init__(self, position: tuple, constants: CharacterConstants) -> None:
+    def __init__(self, position: tuple, settings: CharacterSettings) -> None:
         super().__init__()
-        self.initFromConstants(constants)
+        self.initFromConstants(settings)
 
         # Player status
         self.status = CharacterStatus.Idle
@@ -33,16 +33,16 @@ class Character(pygame.sprite.Sprite):
 
         # Player hitbox
         self.rect = self.image.get_rect(topleft=position)
-        self.hitbox = pygame.Rect(position, (constants.hitboxWidth, constants.hitboxHeight))
+        self.hitbox = pygame.Rect(position, (settings.hitboxWidth, settings.hitboxHeight))
         self.hitbox.midbottom = self.rect.midbottom
         return None
 
-    def initFromConstants(self, constants: CharacterConstants) -> None:
-        self.runSpeed = constants.runSpeed
-        self.fallSpeed = constants.fallSpeed
-        self.jumpSpeed = constants.jumpSpeed
-        self.animationSpeed = constants.animationSpeed
-        self.getAnimations(constants.spritesheetsFolderPath, constants.spriteWidth, constants.spriteHeight)
+    def initFromConstants(self, settings: CharacterSettings) -> None:
+        self.runSpeed = settings.runSpeed
+        self.fallSpeed = settings.fallSpeed
+        self.jumpSpeed = settings.jumpSpeed
+        self.animationSpeed = settings.animationSpeed
+        self.getAnimations(settings.spritesheetsFolderPath, settings.spriteWidth, settings.spriteHeight)
         return None
 
     def getAnimations(self, spritesheetsFolderPath: Path, spriteWidth: int, spriteHeight: int) -> None:

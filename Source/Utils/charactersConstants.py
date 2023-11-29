@@ -3,7 +3,7 @@ from pathlib import Path
 from Source.enums import CharacterNames
 
 
-class CharacterConstants:
+class CharacterSettings:
     def __init__(self,
             runSpeed: float,
             fallSpeed: float,
@@ -28,10 +28,16 @@ class CharacterConstants:
 
 currentDirPath = Path(__file__).absolute().parents[2]
 
-AllCharacterConstants = {
-    characterName: CharacterConstants(
-        runSpeed=5, fallSpeed=0.8, jumpSpeed=-16, hitboxWidth=40,
-        hitboxHeight=50, spriteWidth=32, spriteHeight=32, animationSpeed=0.25,
+AllCharacterSettings = {
+    characterName: CharacterSettings(
+        runSpeed=5,
+        fallSpeed=0.8,
+        jumpSpeed=-16,
+        hitboxWidth=40,
+        hitboxHeight=50,
+        spriteWidth=32,
+        spriteHeight=32,
+        animationSpeed=0.25,
         spritesheetsFolderPath=currentDirPath/f'Assets/Image/MainCharacters/{characterName.value}',
     ) for characterName in CharacterNames
 }
