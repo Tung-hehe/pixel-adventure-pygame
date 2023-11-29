@@ -69,7 +69,7 @@ class Character(pygame.sprite.Sprite):
             self.direction.x = 0
         # Jump event
         if keys[pygame.K_w] and self.relativePosition == CharacterRelativePosition.OnGround:
-            self.jump()
+            self.direction.y = self.jumpSpeed
         return None
 
     def updateStatus(self) -> None:
@@ -97,10 +97,6 @@ class Character(pygame.sprite.Sprite):
             )
         else:
             raise ValueError(f"Unkown character facing {self.facing}")
-        return None
-
-    def jump(self) -> None:
-        self.direction.y = self.jumpSpeed
         return None
 
     def horizontalMove(self) -> None:
