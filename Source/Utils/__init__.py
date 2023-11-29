@@ -1,5 +1,5 @@
 from .utils import Utils
-from .charactersConstants import (
+from .charactersSettings import (
     CharacterSettings,
     AllCharacterSettings
 )
