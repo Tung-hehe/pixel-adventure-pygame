@@ -1,5 +1,9 @@
 from .utils import Utils
-from .charactersSettings import (
+from .gameAssets import (
+    CharacterAssets,
+    Assets
+)
+from .gameSettings import (
     CharacterSettings,
-    AllCharacterSettings
+    Settings
 )

@@ -2,8 +2,6 @@ import sys
 
 from pathlib import Path
 
-import pygame
-
 
 class PythonPath():
     def __init__(self, path: Path):

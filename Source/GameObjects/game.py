@@ -1,8 +1,15 @@
+import random
 import sys
+
+from pathlib import Path
 
 import pygame
 
 from .map import Map
+from Source.Utils import (
+    Settings, Assets
+)
+from Source.enums import CharacterNames
 
 
 class Game:
@@ -24,13 +31,18 @@ class Game:
         tileSize = (64, 64)
         screenWidth = len(map[0]) * tileSize[0]
         screenHeight = len(map) * tileSize[1]
+
         pygame.init()
         self.screen = pygame.display.set_mode((screenWidth,screenHeight))
-        self.clock = pygame.time.Clock()
-        self.level = Map(map, tileSize)
 
-    def loadTileset(self):
-        pass
+        self.rootPath = Path(__file__).absolute().parents[2]
+        self.settings = Settings()
+        self.assets = Assets(self.rootPath)
+
+        self.clock = pygame.time.Clock()
+        playerSettings = self.settings.characters[random.choice(list(CharacterNames))]
+        playerAssets = self.assets.characters[random.choice(list(CharacterNames))]
+        self.map = Map(map, tileSize, playerSettings=playerSettings, playerAssets=playerAssets)
 
     def run(self):
         while True:
@@ -44,7 +56,7 @@ class Game:
                         sys.exit()
 
             self.screen.fill('black')
-            self.level.update(self.screen)
+            self.map.update(self.screen)
 
             pygame.display.update()
             self.clock.tick(60)

@@ -1,27 +1,34 @@
-import random
-
 import pygame
 
 from .character import Character
 from .tile import Tile
 
-from Source.Utils import AllCharacterSettings
-from Source.enums import (
-    CharacterNames,
-    CharacterRelativePosition
+from Source.Utils import (
+    CharacterSettings,
+    CharacterAssets
 )
+from Source.enums import CharacterRelativePosition
 
 
 class Map:
 
-    def __init__(self, map: list, tileSize: tuple) -> None:
-        self.map = self.setupMap(map, tileSize)
+    def __init__(self,
+            map: list,
+            tileSize: tuple,
+            playerSettings: CharacterSettings,
+            playerAssets: CharacterAssets
+        ) -> None:
+        self.map = self.setupMap(map, tileSize, playerSettings, playerAssets)
         return None
 
-    def setupMap(self, map: list, tileSize: tuple) -> None:
+    def setupMap(self,
+            map: list,
+            tileSize: tuple,
+            playerSettings: CharacterSettings,
+            playerAssets: CharacterAssets
+        ) -> None:
         self.tiles = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
-        characterConstants = AllCharacterSettings[random.choice(list(CharacterNames))]
 
         for rowIndex, row in enumerate(map):
             for colIndex, tile in enumerate(row):
@@ -31,7 +38,7 @@ class Map:
                     self.tiles.add(tile)
 
                 if tile == 'P':
-                    player = Character(position, characterConstants)
+                    player = Character(position=position, settings=playerSettings, assets=playerAssets)
                     self.player.add(player)
         return None
 
