@@ -1,4 +1,4 @@
-from .GameObjects import Level
+from .GameObjects import Game
 from .enums import (
     CharacterNames,
     CharacterStatus

@@ -42,16 +42,28 @@ class Character(pygame.sprite.Sprite):
         self.fallSpeed = settings.fallSpeed
         self.jumpSpeed = settings.jumpSpeed
         self.animationSpeed = settings.animationSpeed
-        self.getAnimations(settings.spritesheetsFolderPath, settings.spriteWidth, settings.spriteHeight)
+        self.getAnimations(
+            settings.spritesheetsFolderPath,
+            settings.spriteWidth,
+            settings.spriteHeight,
+            settings.spriteScale
+        )
         return None
 
-    def getAnimations(self, spritesheetsFolderPath: Path, spriteWidth: int, spriteHeight: int) -> None:
+    def getAnimations(self,
+            spritesheetsFolderPath: Path,
+            spriteWidth: int,
+            spriteHeight: int,
+            spriteScale: int
+        ) -> None:
         self.animations = {status: [] for status in CharacterStatus}
         for status in self.animations.keys():
             spritesheetPath = spritesheetsFolderPath / f'{status.value}.png'
             self.animations[status] = Utils.getSurfaceListFromSpritesheets(
                 spritesheetsPath=spritesheetPath,
-                width=spriteWidth, height=spriteHeight, scale=2
+                width=spriteWidth,
+                height=spriteHeight,
+                scale=spriteScale
             )
         return None
 

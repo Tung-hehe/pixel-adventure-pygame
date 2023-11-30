@@ -13,6 +13,7 @@ class CharacterSettings:
             animationSpeed: float,
             spriteWidth: int,
             spriteHeight: int,
+            spriteScale: int,
             spritesheetsFolderPath: Path,
         ) -> None:
         self.runSpeed = runSpeed
@@ -23,6 +24,7 @@ class CharacterSettings:
         self.animationSpeed = animationSpeed
         self.spriteWidth = spriteWidth
         self.spriteHeight = spriteHeight
+        self.spriteScale = spriteScale
         self.spritesheetsFolderPath = spritesheetsFolderPath
         return None
 
@@ -37,6 +39,7 @@ AllCharacterSettings = {
         hitboxHeight=50,
         spriteWidth=32,
         spriteHeight=32,
+        spriteScale=2,
         animationSpeed=0.25,
         spritesheetsFolderPath=currentDirPath/f'Assets/Image/MainCharacters/{characterName.value}',
     ) for characterName in CharacterNames

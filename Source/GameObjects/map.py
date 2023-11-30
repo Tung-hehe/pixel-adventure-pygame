@@ -12,7 +12,7 @@ from Source.enums import (
 )
 
 
-class Level:
+class Map:
 
     def __init__(self, map: list, tileSize: tuple) -> None:
         self.map = self.setupMap(map, tileSize)
