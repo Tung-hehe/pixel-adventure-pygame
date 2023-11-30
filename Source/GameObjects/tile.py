@@ -1,10 +1,15 @@
 import pygame
 
+
 class Tile(pygame.sprite.Sprite):
 
-    def __init__(self, position, size) -> None:
+    def __init__(self, position, surface: pygame.Surface) -> None:
         super().__init__()
-        self.image = pygame.Surface(size)
-        self.image.fill('#6E85B7')
+        self.image = surface
         self.rect = self.image.get_rect(topleft=position)
         return None
+
+class StaticTile(Tile):
+
+    def __init__(self, position, surface: pygame.Surface) -> None:
+        super().__init__(position, surface)

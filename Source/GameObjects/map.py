@@ -1,11 +1,12 @@
 import pygame
 
 from .character import Character
-from .tile import Tile
+from .tile import StaticTile
 
 from Source.Utils import (
     CharacterSettings,
-    CharacterAssets
+    CharacterAssets,
+    TilesetAssets
 )
 from Source.enums import CharacterRelativePosition
 
@@ -14,29 +15,29 @@ class Map:
 
     def __init__(self,
             map: list,
-            tileSize: tuple,
             playerSettings: CharacterSettings,
-            playerAssets: CharacterAssets
+            playerAssets: CharacterAssets,
+            tilesetAssets: TilesetAssets
         ) -> None:
-        self.map = self.setupMap(map, tileSize, playerSettings, playerAssets)
+        self.map = self.setupMap(map, playerSettings, playerAssets, tilesetAssets)
         return None
 
     def setupMap(self,
             map: list,
-            tileSize: tuple,
             playerSettings: CharacterSettings,
-            playerAssets: CharacterAssets
+            playerAssets: CharacterAssets,
+            tilesetAssets: TilesetAssets
         ) -> None:
         self.tiles = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
 
+        tileSize = (tilesetAssets.surfaces[0].get_width(), tilesetAssets.surfaces[0].get_height())
         for rowIndex, row in enumerate(map):
             for colIndex, tile in enumerate(row):
                 position = (colIndex * tileSize[0], rowIndex * tileSize[1])
                 if tile == 'X':
-                    tile = Tile(position, tileSize)
+                    tile = StaticTile(position, tilesetAssets.surfaces[0])
                     self.tiles.add(tile)
-
                 if tile == 'P':
                     player = Character(position=position, settings=playerSettings, assets=playerAssets)
                     self.player.add(player)
@@ -62,13 +63,15 @@ class Map:
                 if player.direction.y > 0:
                     player.hitbox.bottom = tile.rect.top
                     player.direction.y = 0
+                    # Reset jump on air counter
+                    player.jumpOnAirCount = 0
                     player.relativePosition = CharacterRelativePosition.OnGround
                 elif player.direction.y < 0:
                     player.hitbox.top = tile.rect.bottom
                     player.direction.y = 0
                 player.rect.midbottom = player.hitbox.midbottom
         isOnGround = player.relativePosition == CharacterRelativePosition.OnGround
-        if (isOnGround and player.direction.y < 0) or player.direction.y > 1:
+        if (isOnGround and player.direction.y < 0) or player.direction.y > 0:
             player.relativePosition = CharacterRelativePosition.OnAir
         return None
 

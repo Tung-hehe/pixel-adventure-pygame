@@ -17,22 +17,18 @@ class Character(pygame.sprite.Sprite):
 
     def __init__(self, position: tuple, settings: CharacterSettings, assets: CharacterAssets) -> None:
         super().__init__()
-
         self.settings = settings
         self.assets = assets
-
         # Player status
         self.status = CharacterStatus.Idle
+        self.jumpOnAirCount = 0
         self.facing = CharacterFacing.Right
         self.relativePosition = CharacterRelativePosition.OnAir
-
         # Player image
         self.frameIndex = 0
         self.image = self.assets.animations[self.status][self.frameIndex]
-
         #Player direction
         self.direction = pygame.math.Vector2(0, 0)
-
         # Player hitbox
         self.rect = self.image.get_rect(topleft=position)
         self.hitbox = pygame.Rect(position, (settings.hitboxWidth, settings.hitboxHeight))
@@ -52,14 +48,21 @@ class Character(pygame.sprite.Sprite):
         else:
             self.direction.x = 0
         # Jump event
-        if keys[pygame.K_w] and self.relativePosition == CharacterRelativePosition.OnGround:
-            self.direction.y = self.settings.jumpSpeed
+        if keys[pygame.K_w]:
+            if self.relativePosition != CharacterRelativePosition.OnAir:
+                self.direction.y = self.settings.jumpSpeed
+            else:
+                if self.status == CharacterStatus.Fall and self.jumpOnAirCount < self.settings.limitJumpOnAir:
+                    self.status = CharacterStatus.JumpOnAir
+                    self.direction.y = self.settings.jumpOnAirSpeed[self.jumpOnAirCount]
+                    self.jumpOnAirCount += 1
         return None
 
     def updateStatus(self) -> None:
         if self.direction.y < 0:
-            self.status = CharacterStatus.Jump
-        elif self.direction.y > self.settings.fallSpeed:
+            if self.status != CharacterStatus.JumpOnAir:
+                self.status = CharacterStatus.Jump
+        elif self.direction.y > self.settings.gravity:
             self.status = CharacterStatus.Fall
         else:
             if self.direction.x != 0:
@@ -89,7 +92,7 @@ class Character(pygame.sprite.Sprite):
         return None
 
     def veticalMove(self) -> None:
-        self.direction.y += self.settings.fallSpeed
+        self.direction.y += self.settings.gravity
         self.rect.y += self.direction.y
         self.hitbox.y += self.direction.y
         return None

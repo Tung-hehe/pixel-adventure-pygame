@@ -14,8 +14,8 @@ class CharacterStatus(Enum):
     Jump = 'Jump'
     Fall = 'Fall'
     Hit = 'Hit'
-    DoubleJump = 'DoubleJump'
-    WallJump = 'WallJump'
+    JumpOnAir = 'JumpOnAir'
+    ClingWal = 'ClingWall'
 
 class CharacterFacing(Enum):
     Right = 'Right'
@@ -23,7 +23,8 @@ class CharacterFacing(Enum):
 
 class CharacterRelativePosition(Enum):
     OnGround = 'OnGround'
-    OnCeil = 'OnCeil'
     OnAir = 'OnAir'
-    OnLeftWall = 'OnLeftWall'
-    OnRightWall = 'OnRightWall'
+    OnWall = 'OnWall'
+
+class TilesetNames(Enum):
+    Terrain = 'Terrain'

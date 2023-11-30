@@ -9,24 +9,27 @@ from .map import Map
 from Source.Utils import (
     Settings, Assets
 )
-from Source.enums import CharacterNames
+from Source.enums import (
+    CharacterNames,
+    TilesetNames
+)
 
 
 class Game:
 
     def __init__(self):
         map = [
-            '              ',
-            '              ',
-            '              ',
-            ' XX    XXX    ',
-            ' XX           ',
-            ' XXXX         ',
-            ' XXXX       XX',
-            ' XX    X  XXXX',
-            '       X  XXXX',
-            '  P XXXXXXXXXX',
-            'XXXXXXXXXXXXXX'
+            'XXXXXXXXXXXXXXXX',
+            'X              X',
+            'X              X',
+            'X XX    XXX    X',
+            'X XX           X',
+            'X XXXX         X',
+            'X XXXX       XXX',
+            'X XX    X  XXXXX',
+            'X       X  XXXXX',
+            'X  P XXXXXXXXXXX',
+            'XXXXXXXXXXXXXXXX'
         ]
         tileSize = (64, 64)
         screenWidth = len(map[0]) * tileSize[0]
@@ -42,7 +45,12 @@ class Game:
         self.clock = pygame.time.Clock()
         playerSettings = self.settings.characters[random.choice(list(CharacterNames))]
         playerAssets = self.assets.characters[random.choice(list(CharacterNames))]
-        self.map = Map(map, tileSize, playerSettings=playerSettings, playerAssets=playerAssets)
+        self.map = Map(
+            map,
+            playerSettings=playerSettings,
+            playerAssets=playerAssets,
+            tilesetAssets=self.assets.tileset[TilesetNames.Terrain]
+        )
 
     def run(self):
         while True:

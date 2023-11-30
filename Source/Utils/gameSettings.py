@@ -1,28 +1,29 @@
-import pygame
-from pathlib import Path
-
-from .utils import Utils
-from Source.enums import (
-    CharacterNames,
-    CharacterStatus
-)
+from Source.enums import CharacterNames
 
 
 class CharacterSettings:
     def __init__(self,
             runSpeed: float,
-            fallSpeed: float,
+            gravity: float,
             jumpSpeed: float,
             hitboxWidth: int,
             hitboxHeight: int,
             animationSpeed: float,
+            limitJumpOnAir: int,
+            jumpOnAirSpeed: list[float],
+            frictionwithWall: float
         ) -> None:
         self.runSpeed = runSpeed
-        self.fallSpeed = fallSpeed
+        self.gravity = gravity
         self.jumpSpeed = jumpSpeed
         self.hitboxWidth = hitboxWidth
         self.hitboxHeight = hitboxHeight
         self.animationSpeed = animationSpeed
+        self.frictionwithWall = frictionwithWall
+
+        assert limitJumpOnAir == len(jumpOnAirSpeed)
+        self.limitJumpOnAir = limitJumpOnAir
+        self.jumpOnAirSpeed = jumpOnAirSpeed
         return None
 
 
@@ -33,14 +34,17 @@ class Settings:
         return None
 
     def getAllCharacterSettings(self) -> dict[CharacterNames, CharacterSettings]:
-        characterSettings = {
+        charactersSettings = {
             characterName: CharacterSettings(
                 runSpeed=5,
-                fallSpeed=0.8,
+                gravity=0.8,
                 jumpSpeed=-16,
                 hitboxWidth=40,
                 hitboxHeight=50,
                 animationSpeed=0.25,
+                limitJumpOnAir=1,
+                jumpOnAirSpeed=[-14],
+                frictionwithWall=0.6,
             ) for characterName in CharacterNames
         }
-        return characterSettings
+        return charactersSettings
