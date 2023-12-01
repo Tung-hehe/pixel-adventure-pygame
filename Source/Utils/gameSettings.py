@@ -1,4 +1,7 @@
-from Source.enums import CharacterNames
+from Source.enums import (
+    CharacterName,
+    BackgroundName
+)
 
 
 class CharacterSettings:
@@ -11,7 +14,6 @@ class CharacterSettings:
             animationSpeed: float,
             limitJumpOnAir: int,
             jumpOnAirSpeed: list[float],
-            frictionwithWall: float
         ) -> None:
         self.runSpeed = runSpeed
         self.gravity = gravity
@@ -19,21 +21,26 @@ class CharacterSettings:
         self.hitboxWidth = hitboxWidth
         self.hitboxHeight = hitboxHeight
         self.animationSpeed = animationSpeed
-        self.frictionwithWall = frictionwithWall
-
         assert limitJumpOnAir == len(jumpOnAirSpeed)
         self.limitJumpOnAir = limitJumpOnAir
         self.jumpOnAirSpeed = jumpOnAirSpeed
         return None
 
 
+class BackgroundSettings:
+    def __init__(self, scrollSpeed: float):
+        assert 0 <= scrollSpeed <= 1
+        self.scrollSpeed = scrollSpeed
+
+
 class Settings:
 
     def __init__(self):
         self.characters = self.getAllCharacterSettings()
+        self.backgrounds = self.getAllBackgroundSettings()
         return None
 
-    def getAllCharacterSettings(self) -> dict[CharacterNames, CharacterSettings]:
+    def getAllCharacterSettings(self) -> dict[CharacterName, CharacterSettings]:
         charactersSettings = {
             characterName: CharacterSettings(
                 runSpeed=5,
@@ -43,8 +50,15 @@ class Settings:
                 hitboxHeight=50,
                 animationSpeed=0.25,
                 limitJumpOnAir=1,
-                jumpOnAirSpeed=[-14],
-                frictionwithWall=0.6,
-            ) for characterName in CharacterNames
+                jumpOnAirSpeed=[-14]
+            ) for characterName in CharacterName
         }
         return charactersSettings
+
+    def getAllBackgroundSettings(self) -> dict[BackgroundName, BackgroundSettings]:
+        bacgroundsSettings = {
+            backgroundName: BackgroundSettings(
+                scrollSpeed=0.02
+            ) for backgroundName in BackgroundName
+        }
+        return bacgroundsSettings

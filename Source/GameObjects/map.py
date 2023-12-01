@@ -1,12 +1,15 @@
 import pygame
 
+from .background import Background
 from .character import Character
 from .tile import StaticTile
 
 from Source.Utils import (
-    CharacterSettings,
     CharacterAssets,
-    TilesetAssets
+    CharacterSettings,
+    TilesetAssets,
+    BackgroundAssets,
+    BackgroundSettings
 )
 from Source.enums import CharacterRelativePosition
 
@@ -15,11 +18,17 @@ class Map:
 
     def __init__(self,
             map: list,
-            playerSettings: CharacterSettings,
             playerAssets: CharacterAssets,
-            tilesetAssets: TilesetAssets
+            playerSettings: CharacterSettings,
+            tilesetAssets: TilesetAssets,
+            backgroundAssets: BackgroundAssets,
+            backgroundSettings: BackgroundSettings,
         ) -> None:
-        self.map = self.setupMap(map, playerSettings, playerAssets, tilesetAssets)
+        self.setupMap(map, playerSettings, playerAssets, tilesetAssets)
+        self.background = Background(
+            backgroundAssets=backgroundAssets,
+            backgroundSettings=backgroundSettings
+        )
         return None
 
     def setupMap(self,
@@ -76,7 +85,11 @@ class Map:
         return None
 
     def update(self, screen) -> None:
+        self.background.scroll()
+        self.background.draw(screen)
+
         self.tiles.draw(screen)
+
         self.player.update()
         self.horizontalMovementCollision()
         self.verticalMovementCollision()

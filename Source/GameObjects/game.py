@@ -7,17 +7,19 @@ import pygame
 
 from .map import Map
 from Source.Utils import (
-    Settings, Assets
+    Settings,
+    Assets
 )
 from Source.enums import (
-    CharacterNames,
-    TilesetNames
+    CharacterName,
+    TilesetName,
+    BackgroundName
 )
 
 
 class Game:
 
-    def __init__(self):
+    def __init__(self) -> None:
         map = [
             'XXXXXXXXXXXXXXXX',
             'X              X',
@@ -43,16 +45,24 @@ class Game:
         self.assets = Assets(self.rootPath)
 
         self.clock = pygame.time.Clock()
-        playerSettings = self.settings.characters[random.choice(list(CharacterNames))]
-        playerAssets = self.assets.characters[random.choice(list(CharacterNames))]
+        characterName = random.choice(list(CharacterName))
+        playerAssets = self.assets.characters[characterName]
+        playerSettings = self.settings.characters[characterName]
+
+        backgroundName = random.choice(list(BackgroundName))
+        backgroundAssets = self.assets.backgrounds[backgroundName]
+        backgroundSettings = self.settings.backgrounds[backgroundName]
+
         self.map = Map(
-            map,
+            map=map,
             playerSettings=playerSettings,
             playerAssets=playerAssets,
-            tilesetAssets=self.assets.tileset[TilesetNames.Terrain]
+            tilesetAssets=self.assets.tilesets[TilesetName.Terrain],
+            backgroundAssets=backgroundAssets,
+            backgroundSettings=backgroundSettings,
         )
 
-    def run(self):
+    def run(self) -> None:
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -63,7 +73,6 @@ class Game:
                         pygame.quit()
                         sys.exit()
 
-            self.screen.fill('black')
             self.map.update(self.screen)
 
             pygame.display.update()

@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class CharacterNames(Enum):
+class CharacterName(Enum):
     PinkMan = 'PinkMan'
     MaskDude = 'MaskDude'
     NinjaFrog = 'NinjaFrog'
@@ -15,16 +15,29 @@ class CharacterStatus(Enum):
     Fall = 'Fall'
     Hit = 'Hit'
     JumpOnAir = 'JumpOnAir'
-    ClingWal = 'ClingWall'
+    ClingWall = 'ClingWall'
+
 
 class CharacterFacing(Enum):
     Right = 'Right'
     Left = 'Left'
+
 
 class CharacterRelativePosition(Enum):
     OnGround = 'OnGround'
     OnAir = 'OnAir'
     OnWall = 'OnWall'
 
-class TilesetNames(Enum):
+
+class TilesetName(Enum):
     Terrain = 'Terrain'
+
+
+class BackgroundName(Enum):
+    Blue = 'Blue'
+    Brown = 'Brown'
+    Gray = 'Gray'
+    Green = 'Green'
+    Pink = 'Pink'
+    Purple = 'Purple'
+    Yellow = 'Yellow'

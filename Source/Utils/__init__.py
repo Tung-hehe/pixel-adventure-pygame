@@ -1,10 +1,12 @@
 from .utils import Utils
 from .gameAssets import (
-    CharacterAssets,
+    Assets,
+    BackgroundAssets,
     TilesetAssets,
-    Assets
+    CharacterAssets,
 )
 from .gameSettings import (
+    Settings,
+    BackgroundSettings,
     CharacterSettings,
-    Settings
 )

@@ -1,5 +1,9 @@
-from pathlib import Path
-
+"""
+Some problems need to handle
+    - Add event cling wall
+    - Use "real time" to calculate position to remove lag when run in different devices
+    - Add friction and acceleration
+"""
 import pygame
 
 from Source.Utils import (
