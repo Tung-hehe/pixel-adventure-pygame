@@ -3,6 +3,7 @@ import sys
 
 from pathlib import Path
 
+import numpy as np
 import pygame
 
 from .map import Map
@@ -20,27 +21,16 @@ from Source.enums import (
 class Game:
 
     def __init__(self) -> None:
-        map = [
-            'XXXXXXXXXXXXXXXX',
-            'X              X',
-            'X              X',
-            'X XX    XXX    X',
-            'X XX           X',
-            'X XXXX         X',
-            'X XXXX       XXX',
-            'X XX    X  XXXXX',
-            'X       X  XXXXX',
-            'X  P XXXXXXXXXXX',
-            'XXXXXXXXXXXXXXXX'
-        ]
-        tileSize = (64, 64)
-        screenWidth = len(map[0]) * tileSize[0]
-        screenHeight = len(map) * tileSize[1]
+        self.rootPath = Path(__file__).absolute().parents[2]
+
+        map = np.loadtxt(self.rootPath/"Data/Maps/Map_01/Terrain.csv", delimiter=",", dtype=int)
+        tileSize = (16, 16)
+        screenWidth = map.shape[1] * tileSize[0]
+        screenHeight = map.shape[0] * tileSize[1]
 
         pygame.init()
         self.screen = pygame.display.set_mode((screenWidth,screenHeight))
 
-        self.rootPath = Path(__file__).absolute().parents[2]
         self.settings = Settings()
         self.assets = Assets(self.rootPath)
 

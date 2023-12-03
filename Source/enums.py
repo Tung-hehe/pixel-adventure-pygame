@@ -9,13 +9,13 @@ class CharacterName(Enum):
 
 
 class CharacterStatus(Enum):
-    Idle = 'Idle'
-    Run = 'Run'
-    Jump = 'Jump'
+    ClingWall = 'ClingWall'
     Fall = 'Fall'
     Hit = 'Hit'
+    Idle = 'Idle'
+    Jump = 'Jump'
     JumpOnAir = 'JumpOnAir'
-    ClingWall = 'ClingWall'
+    Run = 'Run'
 
 
 class CharacterFacing(Enum):

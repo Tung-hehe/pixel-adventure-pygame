@@ -80,7 +80,7 @@ class Assets:
             tilesetName: TilesetAssets(
                 width=32,
                 height=32,
-                scale=2,
+                scale=1,
                 tilesetFolderPath=rootPath/f'Assets/Image/Tilesets/{tilesetName.value}.png',
             ) for tilesetName in TilesetName
         }

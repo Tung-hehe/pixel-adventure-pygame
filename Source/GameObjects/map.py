@@ -11,7 +11,10 @@ from Source.Utils import (
     BackgroundAssets,
     BackgroundSettings
 )
-from Source.enums import CharacterRelativePosition
+from Source.enums import (
+    CharacterStatus,
+    CharacterRelativePosition
+)
 
 
 class Map:
@@ -40,16 +43,16 @@ class Map:
         self.tiles = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
 
-        tileSize = (tilesetAssets.surfaces[0].get_width(), tilesetAssets.surfaces[0].get_height())
+        tileSize = (16, 16)
         for rowIndex, row in enumerate(map):
-            for colIndex, tile in enumerate(row):
-                position = (colIndex * tileSize[0], rowIndex * tileSize[1])
-                if tile == 'X':
-                    tile = StaticTile(position, tilesetAssets.surfaces[0])
+            for colIndex, tileIndex in enumerate(row):
+                if tileIndex != -1:
+                    position = (colIndex * tileSize[0], rowIndex * tileSize[1])
+                    tile = StaticTile(position, tilesetAssets.surfaces[tileIndex])
                     self.tiles.add(tile)
-                if tile == 'P':
-                    player = Character(position=position, settings=playerSettings, assets=playerAssets)
-                    self.player.add(player)
+
+        player = Character(position=(100, 100), settings=playerSettings, assets=playerAssets)
+        self.player.add(player)
         return None
 
     def horizontalMovementCollision(self) -> None:
@@ -61,6 +64,9 @@ class Map:
                     player.hitbox.left = tile.rect.right
                 elif player.direction.x == 1:
                     player.hitbox.right = tile.rect.left
+                # if player.relativePosition == CharacterRelativePosition.OnAir and player.status == CharacterStatus.Fall:
+                #     player.direction.x = 0
+                #     player.direction.y = 0
                 player.rect.midbottom = player.hitbox.midbottom
         return None
 
