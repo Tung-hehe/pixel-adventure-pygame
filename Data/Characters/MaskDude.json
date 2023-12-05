@@ -16,14 +16,5 @@
         "animationSpeed": 0.25,
         "limitJumpOnAir": 1,
         "jumpOnAirSpeed": [-14]
-    },
-    "stateMachine": {
-        "ClingWall": ["Idle", "Fall", "Jump", "Hit"],
-        "Fall": ["Idle", "ClingWall", "JumpOnAir", "Hit"],
-        "Hit": [ "Idle", "Run", "Jump", "Fall", "ClingWall"],
-        "Idle": ["Jump", "Run", "Hit"],
-        "Jump": ["Fall", "JumpOnAir", "Hit"],
-        "JumpOnAir": ["ClingWall", "Fall", "Hit"],
-        "Run": ["Idle", "Jump", "Hit"]
     }
 }
