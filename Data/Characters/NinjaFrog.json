@@ -1,0 +1,29 @@
+{
+    "assets": {
+        "animations": {
+            "path": "Assets/Image/MainCharacters/NinjaFrog/",
+            "width": 32,
+            "height": 32,
+            "scale":2
+        }
+    },
+    "settings": {
+        "runSpeed": 5,
+        "gravity": 0.8,
+        "jumpSpeed": -16,
+        "hitboxWidth": 40,
+        "hitboxHeight": 50,
+        "animationSpeed": 0.25,
+        "limitJumpOnAir": 1,
+        "jumpOnAirSpeed": [-14]
+    },
+    "stateMachine": {
+        "ClingWall": ["Idle", "Fall", "Jump", "Hit"],
+        "Fall": ["Idle", "ClingWall", "JumpOnAir", "Hit"],
+        "Hit": [ "Idle", "Run", "Jump", "Fall", "ClingWall"],
+        "Idle": ["Jump", "Run", "Hit"],
+        "Jump": ["Fall", "JumpOnAir", "Hit"],
+        "JumpOnAir": ["ClingWall", "Fall"],
+        "Run": ["Idle", "Jump", "Hit"]
+    }
+}

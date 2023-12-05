@@ -7,10 +7,8 @@ import numpy as np
 import pygame
 
 from .map import Map
-from Source.Utils import (
-    Settings,
-    Assets
-)
+from Source.Utils import GameData
+
 from Source.enums import (
     CharacterName,
     TilesetName,
@@ -30,27 +28,19 @@ class Game:
 
         pygame.init()
         self.screen = pygame.display.set_mode((screenWidth,screenHeight))
+        self.data = GameData(self.rootPath)
 
-        self.settings = Settings()
-        self.assets = Assets(self.rootPath)
-
-        self.clock = pygame.time.Clock()
         characterName = random.choice(list(CharacterName))
-        playerAssets = self.assets.characters[characterName]
-        playerSettings = self.settings.characters[characterName]
-
+        playerData = self.data.characters[characterName]
         backgroundName = random.choice(list(BackgroundName))
-        backgroundAssets = self.assets.backgrounds[backgroundName]
-        backgroundSettings = self.settings.backgrounds[backgroundName]
+        backgroundData = self.data.backgrounds[backgroundName]
 
         self.map = Map(
-            map=map,
-            playerSettings=playerSettings,
-            playerAssets=playerAssets,
-            tilesetAssets=self.assets.tilesets[TilesetName.Terrain],
-            backgroundAssets=backgroundAssets,
-            backgroundSettings=backgroundSettings,
+            map=map, playerData=playerData,
+            tilesetData=self.data.tilesets[TilesetName.Terrain],
+            backgroundData=backgroundData
         )
+        self.clock = pygame.time.Clock()
 
     def run(self) -> None:
         while True:

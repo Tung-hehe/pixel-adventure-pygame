@@ -6,10 +6,7 @@ Some problems need to handle
 """
 import pygame
 
-from Source.Utils import (
-    CharacterSettings,
-    CharacterAssets
-)
+from Source.Utils import CharacterData
 from Source.enums import (
     CharacterStatus,
     CharacterFacing,
@@ -19,10 +16,9 @@ from Source.enums import (
 
 class Character(pygame.sprite.Sprite):
 
-    def __init__(self, position: tuple, settings: CharacterSettings, assets: CharacterAssets) -> None:
+    def __init__(self, position: tuple, data: CharacterData) -> None:
         super().__init__()
-        self.settings = settings
-        self.assets = assets
+        self.data = data
         # Player status
         self.status = CharacterStatus.Idle
         self.jumpOnAirCount = 0
@@ -30,12 +26,12 @@ class Character(pygame.sprite.Sprite):
         self.relativePosition = CharacterRelativePosition.OnAir
         # Player image
         self.frameIndex = 0
-        self.image = self.assets.animations[self.status][self.frameIndex]
+        self.image = self.data.animations[self.status][self.frameIndex]
         #Player direction
         self.direction = pygame.math.Vector2(0, 0)
         # Player hitbox
         self.rect = self.image.get_rect(topleft=position)
-        self.hitbox = pygame.Rect(position, (settings.hitboxWidth, settings.hitboxHeight))
+        self.hitbox = pygame.Rect(position, (data.hitboxWidth, data.hitboxHeight))
         self.hitbox.midbottom = self.rect.midbottom
         return None
 
@@ -54,11 +50,11 @@ class Character(pygame.sprite.Sprite):
         # Jump event
         if keys[pygame.K_w]:
             if self.relativePosition != CharacterRelativePosition.OnAir:
-                self.direction.y = self.settings.jumpSpeed
+                self.direction.y = self.data.jumpSpeed
             else:
-                if self.status == CharacterStatus.Fall and self.jumpOnAirCount < self.settings.limitJumpOnAir:
+                if self.status == CharacterStatus.Fall and self.jumpOnAirCount < self.data.limitJumpOnAir:
                     self.status = CharacterStatus.JumpOnAir
-                    self.direction.y = self.settings.jumpOnAirSpeed[self.jumpOnAirCount]
+                    self.direction.y = self.data.jumpOnAirSpeed[self.jumpOnAirCount]
                     self.jumpOnAirCount += 1
         return None
 
@@ -66,7 +62,7 @@ class Character(pygame.sprite.Sprite):
         if self.direction.y < 0:
             if self.status != CharacterStatus.JumpOnAir:
                 self.status = CharacterStatus.Jump
-        elif self.direction.y > self.settings.gravity:
+        elif self.direction.y > self.data.gravity:
             self.status = CharacterStatus.Fall
         else:
             if self.direction.x != 0:
@@ -76,8 +72,8 @@ class Character(pygame.sprite.Sprite):
         return None
 
     def updateImage(self):
-        animation = self.assets.animations[self.status]
-        self.frameIndex += self.settings.animationSpeed
+        animation = self.data.animations[self.status]
+        self.frameIndex += self.data.animationSpeed
         if self.frameIndex >= len(animation):
             self.frameIndex = 0
         if self.facing == CharacterFacing.Right:
@@ -91,12 +87,12 @@ class Character(pygame.sprite.Sprite):
         return None
 
     def horizontalMove(self) -> None:
-        self.rect.x += self.direction.x * self.settings.runSpeed
-        self.hitbox.x += self.direction.x * self.settings.runSpeed
+        self.rect.x += self.direction.x * self.data.runSpeed
+        self.hitbox.x += self.direction.x * self.data.runSpeed
         return None
 
     def veticalMove(self) -> None:
-        self.direction.y += self.settings.gravity
+        self.direction.y += self.data.gravity
         self.rect.y += self.direction.y
         self.hitbox.y += self.direction.y
         return None

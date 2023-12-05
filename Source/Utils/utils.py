@@ -1,3 +1,5 @@
+import json
+
 from pathlib import Path
 
 import pygame
@@ -6,14 +8,20 @@ import pygame
 class Utils:
 
     @classmethod
+    def readJSONFile(cls, path: Path) -> dict:
+        with open(path, 'r') as f:
+            dataDict = json.load(f)
+        return dataDict
+
+    @classmethod
     def getSurfaceListFromSpritesheets(cls,
-            spritesheetsPath: Path, width: int, height: int, scale: int = 1
+            path: Path, width: int, height: int, scale: int = 1
         ) -> list[pygame.Surface]:
         assert width > 0
         assert height > 0
         assert scale > 0
 
-        spritesheets = pygame.image.load(spritesheetsPath).convert_alpha()
+        spritesheets = pygame.image.load(path).convert_alpha()
         nFrame = spritesheets.get_width() // width
 
         surfaceList = []
@@ -28,13 +36,13 @@ class Utils:
 
     @classmethod
     def getSurfaceListFromTileset(self,
-            tilesetPath: Path, width: int, height: int, scale: int = 1
+            path: Path, width: int, height: int, scale: int = 1
         ) -> list[pygame.Surface]:
         assert width > 0
         assert height > 0
         assert scale > 0
 
-        spritesheets = pygame.image.load(tilesetPath).convert_alpha()
+        spritesheets = pygame.image.load(path).convert_alpha()
         nCols = spritesheets.get_width() // width
         nRows = spritesheets.get_width() // width
 

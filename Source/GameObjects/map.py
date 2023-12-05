@@ -5,11 +5,9 @@ from .character import Character
 from .tile import StaticTile
 
 from Source.Utils import (
-    CharacterAssets,
-    CharacterSettings,
-    TilesetAssets,
-    BackgroundAssets,
-    BackgroundSettings
+    CharacterData,
+    TilesetData,
+    BackgroundData
 )
 from Source.enums import (
     CharacterStatus,
@@ -21,24 +19,18 @@ class Map:
 
     def __init__(self,
             map: list,
-            playerAssets: CharacterAssets,
-            playerSettings: CharacterSettings,
-            tilesetAssets: TilesetAssets,
-            backgroundAssets: BackgroundAssets,
-            backgroundSettings: BackgroundSettings,
+            playerData: CharacterData,
+            tilesetData: TilesetData,
+            backgroundData: BackgroundData
         ) -> None:
-        self.setupMap(map, playerSettings, playerAssets, tilesetAssets)
-        self.background = Background(
-            backgroundAssets=backgroundAssets,
-            backgroundSettings=backgroundSettings
-        )
+        self.setupMap(map, playerData, tilesetData)
+        self.background = Background(backgroundData)
         return None
 
     def setupMap(self,
             map: list,
-            playerSettings: CharacterSettings,
-            playerAssets: CharacterAssets,
-            tilesetAssets: TilesetAssets
+            playerData: CharacterData,
+            tilesetData: TilesetData,
         ) -> None:
         self.tiles = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
@@ -48,10 +40,10 @@ class Map:
             for colIndex, tileIndex in enumerate(row):
                 if tileIndex != -1:
                     position = (colIndex * tileSize[0], rowIndex * tileSize[1])
-                    tile = StaticTile(position, tilesetAssets.surfaces[tileIndex])
+                    tile = StaticTile(position, tilesetData.surfaces[tileIndex])
                     self.tiles.add(tile)
 
-        player = Character(position=(100, 100), settings=playerSettings, assets=playerAssets)
+        player = Character(position=(100, 100), data=playerData)
         self.player.add(player)
         return None
 

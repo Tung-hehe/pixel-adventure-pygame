@@ -1,18 +1,16 @@
-{
-    "layers": [
-        {
-            "layer": 1,
-            "path": "Data/Maps/Map_01/Platform.json",
-            "tileset": "Terrain",
-            "tilewidth": 16,
-            "tileheight": 16
-        },
-        {
-            "layer": 1,
-            "path": "Data/Maps/Map_01/Terrain.json",
-            "tileset": "Terrain",
-            "tilewidth": 16,
-            "tileheight": 16
-        }
-    ]
-}
+[
+    {
+        "layer": 0,
+        "path": "Data/Maps/Map_01/Platform.csv",
+        "tileset": "Terrain",
+        "tilewidth": 16,
+        "tileheight": 16
+    },
+    {
+        "layer": 1,
+        "path": "Data/Maps/Map_01/Terrain.csv",
+        "tileset": "Terrain",
+        "tilewidth": 16,
+        "tileheight": 16
+    }
+]
