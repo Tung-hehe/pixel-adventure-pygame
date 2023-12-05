@@ -66,7 +66,10 @@ class Character(pygame.sprite.Sprite):
             self.status = CharacterStatus.Fall
         else:
             if self.direction.x != 0:
-                self.status = CharacterStatus.Run
+                if self.relativePosition == CharacterRelativePosition.OnGround:
+                    self.status = CharacterStatus.Run
+                elif self.relativePosition == CharacterRelativePosition.OnWall:
+                    self.status = CharacterStatus.ClingWall
             else:
                 self.status = CharacterStatus.Idle
         return None

@@ -56,9 +56,9 @@ class Map:
                     player.hitbox.left = tile.rect.right
                 elif player.direction.x == 1:
                     player.hitbox.right = tile.rect.left
-                # if player.relativePosition == CharacterRelativePosition.OnAir and player.status == CharacterStatus.Fall:
-                #     player.direction.x = 0
-                #     player.direction.y = 0
+                if player.relativePosition == CharacterRelativePosition.OnAir and player.status == CharacterStatus.Fall:
+                    player.direction.y = 0
+                    player.relativePosition = CharacterRelativePosition.OnWall
                 player.rect.midbottom = player.hitbox.midbottom
         return None
 

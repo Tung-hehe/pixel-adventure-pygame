@@ -17,17 +17,13 @@ class CharacterData:
 
     def __init__(self, rootPath: Path, characterName: CharacterName) -> None:
         dataDict = Utils.readJSONFile(rootPath/f'Data/Characters/{characterName.value}.json')
-        self.stateMachine = {
-            CharacterStatus(status): [CharacterStatus(nextStatus) for nextStatus in nextStatuses]
-            for status, nextStatuses in dataDict['stateMachine'].items()
-        }
         for k, v in dataDict['settings'].items():
             setattr(self, k, v)
         self.createAnimations(rootPath, dataDict['assets']['animations'])
         return None
 
     def createAnimations(self, rootPath: Path, animationData: dict) -> None:
-        self.animations = {status: [] for status in self.stateMachine.keys()}
+        self.animations = {status: [] for status in CharacterStatus}
         for status in self.animations.keys():
             path = rootPath / animationData['path'] / f'{status.value}.png'
             self.animations[status] = Utils.getSurfaceListFromSpritesheets(
