@@ -1,9 +1,3 @@
-"""
-Some problems need to handle
-    - Add event cling wall
-    - Use "real time" to calculate position to remove lag when run in different devices
-    - Add friction and acceleration
-"""
 import pygame
 
 from Source.Utils import CharacterData
@@ -46,24 +40,32 @@ class Character(pygame.sprite.Sprite):
             self.direction.x = -1
             self.facing = CharacterFacing.Left
         else:
-            self.direction.x = 0
+            if self.relativePosition != CharacterRelativePosition.OnWall:
+                self.direction.x = 0
         # Jump event
         if keys[pygame.K_w]:
-            if self.relativePosition != CharacterRelativePosition.OnAir:
-                self.direction.y = self.data.jumpSpeed
-            else:
-                if self.status == CharacterStatus.Fall and self.jumpOnAirCount < self.data.limitJumpOnAir:
-                    self.status = CharacterStatus.JumpOnAir
-                    self.direction.y = self.data.jumpOnAirSpeed[self.jumpOnAirCount]
-                    self.jumpOnAirCount += 1
+            self.jump()
+        return None
+
+    def jump(self) -> None:
+        if self.relativePosition != CharacterRelativePosition.OnAir:
+            self.direction.y = self.data.jumpSpeed
+        else:
+            if self.status == CharacterStatus.Fall and self.jumpOnAirCount < self.data.limitJumpOnAir:
+                self.status = CharacterStatus.JumpOnAir
+                self.direction.y = self.data.jumpOnAirSpeed[self.jumpOnAirCount]
+                self.jumpOnAirCount += 1
         return None
 
     def updateStatus(self) -> None:
         if self.direction.y < 0:
             if self.status != CharacterStatus.JumpOnAir:
                 self.status = CharacterStatus.Jump
-        elif self.direction.y > self.data.gravity:
-            self.status = CharacterStatus.Fall
+        elif self.direction.y > 0:
+            if self.relativePosition == CharacterRelativePosition.OnAir:
+                self.status = CharacterStatus.Fall
+            elif self.relativePosition == CharacterRelativePosition.OnWall:
+                self.status = CharacterStatus.ClingWall
         else:
             if self.direction.x != 0:
                 if self.relativePosition == CharacterRelativePosition.OnGround:
@@ -95,7 +97,10 @@ class Character(pygame.sprite.Sprite):
         return None
 
     def veticalMove(self) -> None:
-        self.direction.y += self.data.gravity
+        if self.relativePosition == CharacterRelativePosition.OnWall:
+            self.direction.y += self.data.gravity - self.data.wallFriction
+        else:
+            self.direction.y += self.data.gravity
         self.rect.y += self.direction.y
         self.hitbox.y += self.direction.y
         return None

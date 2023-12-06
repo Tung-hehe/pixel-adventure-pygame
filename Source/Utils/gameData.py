@@ -40,6 +40,7 @@ class TilesetData:
         self.surfaces = Utils.getSurfaceListFromTileset(**dataDict)
         return None
 
+
 class BackgroundData:
 
     def __init__(self, rootPath: Path, backgroundName: BackgroundName) -> None:

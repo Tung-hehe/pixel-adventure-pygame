@@ -30,7 +30,8 @@ class Game:
         self.screen = pygame.display.set_mode((screenWidth,screenHeight))
         self.data = GameData(self.rootPath)
 
-        characterName = random.choice(list(CharacterName))
+        # characterName = random.choice(list(CharacterName))
+        characterName = CharacterName.PinkMan
         playerData = self.data.characters[characterName]
         backgroundName = random.choice(list(BackgroundName))
         backgroundData = self.data.backgrounds[backgroundName]

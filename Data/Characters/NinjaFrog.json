@@ -10,6 +10,7 @@
     "settings": {
         "runSpeed": 5,
         "gravity": 0.8,
+        "wallFriction": 0.7,
         "jumpSpeed": -16,
         "hitboxWidth": 40,
         "hitboxHeight": 50,
