@@ -21,8 +21,8 @@ class Character(pygame.sprite.Sprite):
         # Player image
         self.frameIndex = 0
         self.image = self.data.animations[self.status][self.frameIndex]
-        #Player direction
-        self.direction = pygame.math.Vector2(0, 0)
+        #Player velocity
+        self.velocity = pygame.math.Vector2(0, 0)
         # Player hitbox
         self.rect = self.image.get_rect(topleft=position)
         self.hitbox = pygame.Rect(position, (data.hitboxWidth, data.hitboxHeight))
@@ -34,40 +34,42 @@ class Character(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         # Move event
         if keys[pygame.K_d]:
-            self.direction.x = 1
+            self.velocity.x = self.data.runSpeed
             self.facing = CharacterFacing.Right
         elif keys[pygame.K_a]:
-            self.direction.x = -1
+            self.velocity.x = -self.data.runSpeed
             self.facing = CharacterFacing.Left
         else:
             if self.relativePosition != CharacterRelativePosition.OnWall:
-                self.direction.x = 0
+                self.velocity.x = 0
         # Jump event
         if keys[pygame.K_w]:
             self.jump()
         return None
 
     def jump(self) -> None:
-        if self.relativePosition != CharacterRelativePosition.OnAir:
-            self.direction.y = self.data.jumpSpeed
-        else:
+        if self.relativePosition == CharacterRelativePosition.OnAir:
             if self.status == CharacterStatus.Fall and self.jumpOnAirCount < self.data.limitJumpOnAir:
                 self.status = CharacterStatus.JumpOnAir
-                self.direction.y = self.data.jumpOnAirSpeed[self.jumpOnAirCount]
+                self.velocity.y = self.data.jumpOnAirSpeed[self.jumpOnAirCount]
                 self.jumpOnAirCount += 1
+        else:
+            if self.relativePosition == CharacterRelativePosition.OnWall:
+                self.velocity.x = 0
+            self.velocity.y = self.data.jumpSpeed
         return None
 
     def updateStatus(self) -> None:
-        if self.direction.y < 0:
+        if self.velocity.y < 0:
             if self.status != CharacterStatus.JumpOnAir:
                 self.status = CharacterStatus.Jump
-        elif self.direction.y > 0:
+        elif self.velocity.y > 0:
             if self.relativePosition == CharacterRelativePosition.OnAir:
                 self.status = CharacterStatus.Fall
             elif self.relativePosition == CharacterRelativePosition.OnWall:
                 self.status = CharacterStatus.ClingWall
         else:
-            if self.direction.x != 0:
+            if self.velocity.x != 0:
                 if self.relativePosition == CharacterRelativePosition.OnGround:
                     self.status = CharacterStatus.Run
                 elif self.relativePosition == CharacterRelativePosition.OnWall:
@@ -92,17 +94,17 @@ class Character(pygame.sprite.Sprite):
         return None
 
     def horizontalMove(self) -> None:
-        self.rect.x += self.direction.x * self.data.runSpeed
-        self.hitbox.x += self.direction.x * self.data.runSpeed
+        self.rect.x += self.velocity.x
+        self.hitbox.x += self.velocity.x
         return None
 
     def veticalMove(self) -> None:
         if self.relativePosition == CharacterRelativePosition.OnWall:
-            self.direction.y += self.data.gravity - self.data.wallFriction
+            self.velocity.y += self.data.gravity - self.data.wallFriction
         else:
-            self.direction.y += self.data.gravity
-        self.rect.y += self.direction.y
-        self.hitbox.y += self.direction.y
+            self.velocity.y += self.data.gravity
+        self.rect.y += self.velocity.y
+        self.hitbox.y += self.velocity.y
         return None
 
     def update(self) -> None:

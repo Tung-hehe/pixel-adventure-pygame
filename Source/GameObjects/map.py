@@ -57,9 +57,9 @@ class Map:
             if tile.rect.colliderect(self.player.sprite.hitbox)
         ]
         for tile in horizontalCollisionTiles:
-            if self.player.sprite.direction.x < 0:
+            if self.player.sprite.velocity.x < 0:
                 self.player.sprite.hitbox.left = tile.rect.right
-            elif self.player.sprite.direction.x > 0:
+            elif self.player.sprite.velocity.x > 0:
                 self.player.sprite.hitbox.right = tile.rect.left
         return horizontalCollisionTiles
 
@@ -70,15 +70,15 @@ class Map:
             if tile.rect.colliderect(self.player.sprite.hitbox)
         ]
         for tile in verticalColitionTiles:
-            if self.player.sprite.direction.y > 0:
+            if self.player.sprite.velocity.y > 0:
                 self.player.sprite.hitbox.bottom = tile.rect.top
-                self.player.sprite.direction.y = 0
+                self.player.sprite.velocity.y = 0
                 # Reset jump on air counter
                 self.player.sprite.jumpOnAirCount = 0
                 self.player.sprite.relativePosition = CharacterRelativePosition.OnGround
-            elif self.player.sprite.direction.y < 0:
+            elif self.player.sprite.velocity.y < 0:
                 self.player.sprite.hitbox.top = tile.rect.bottom
-                self.player.sprite.direction.y = 0
+                self.player.sprite.velocity.y = 0
         return verticalColitionTiles
 
     def handlePlayerMovementCollision(self) -> None:
@@ -89,7 +89,7 @@ class Map:
         if horizontalCollisionTiles:
             if self.player.sprite.relativePosition == CharacterRelativePosition.OnAir:
                 if self.player.sprite.status == CharacterStatus.Fall:
-                    self.player.sprite.direction.y = 0
+                    self.player.sprite.velocity.y = 0
                     self.player.sprite.relativePosition = CharacterRelativePosition.OnWall
         elif not verticalColitionTiles:
             self.player.sprite.relativePosition = CharacterRelativePosition.OnAir
@@ -103,6 +103,5 @@ class Map:
 
         self.handlePlayerMovementCollision()
         self.player.update()
-        print(self.player.sprite.relativePosition)
         self.player.draw(screen)
         return None
