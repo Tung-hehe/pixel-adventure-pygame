@@ -18,6 +18,7 @@ class Character(pygame.sprite.Sprite):
         self.jumpOnAirCount = 0
         self.facing = CharacterFacing.Right
         self.relativePosition = CharacterRelativePosition.OnAir
+        self.trackingPosition = position
         # Player image
         self.frameIndex = 0
         self.image = self.data.animations[self.status][self.frameIndex]

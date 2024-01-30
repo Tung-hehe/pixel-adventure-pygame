@@ -13,3 +13,9 @@ class StaticTile(Tile):
 
     def __init__(self, position, surface: pygame.Surface) -> None:
         super().__init__(position, surface)
+
+class OneWayCollisionStaticTile(StaticTile):
+
+    def __init__(self, position, surface: pygame.Surface, hitbox) -> None:
+        super().__init__(position, surface)
+        self.rect = pygame.Rect(position, hitbox)

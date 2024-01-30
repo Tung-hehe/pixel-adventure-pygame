@@ -1,16 +1,18 @@
-[
-    {
-        "layer": 0,
-        "path": "Data/Maps/Map_01/Platform.csv",
-        "tileset": "Terrain",
-        "tilewidth": 16,
-        "tileheight": 16
-    },
-    {
-        "layer": 1,
-        "path": "Data/Maps/Map_01/Terrain.csv",
-        "tileset": "Terrain",
-        "tilewidth": 16,
-        "tileheight": 16
-    }
-]
+{
+    "tileWidth": 16,
+    "tileHeight": 16,
+    "playerPosition": [100, 100],
+    "layers": [
+        {
+            "class": "StaticTile",
+            "path": "Data/Maps/Map_01/Terrain.csv",
+            "tileset": "Terrain"
+        },
+        {
+            "class": "OneWayCollisionStaticTile",
+            "path": "Data/Maps/Map_01/Platform.csv",
+            "tileset": "Terrain",
+            "hitbox": [32, 1]
+        }
+    ]
+}

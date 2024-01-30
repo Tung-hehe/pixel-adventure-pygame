@@ -7,11 +7,13 @@ import numpy as np
 import pygame
 
 from .map import Map
-from Source.Utils import GameData
+from Source.Utils import (
+    GameData,
+    Utils
+)
 
 from Source.enums import (
     CharacterName,
-    TilesetName,
     BackgroundName
 )
 
@@ -19,27 +21,24 @@ from Source.enums import (
 class Game:
 
     def __init__(self) -> None:
-        self.rootPath = Path(__file__).absolute().parents[2]
-
-        map = np.loadtxt(self.rootPath/"Data/Maps/Map_01/Terrain.csv", delimiter=",", dtype=int)
-        tileSize = (16, 16)
-        screenWidth = map.shape[1] * tileSize[0]
-        screenHeight = map.shape[0] * tileSize[1]
-
         pygame.init()
+        self.rootPath = Path(__file__).absolute().parents[2]
+        settings = Utils.readJSONFile(self.rootPath/'Data/Settings.json')
+        self.FPS = settings['FPS']
+        screenWidth = settings['screenWidth']
+        screenHeight = settings['screenHeight']
         self.screen = pygame.display.set_mode((screenWidth,screenHeight))
         self.data = GameData(self.rootPath)
-
-        # characterName = random.choice(list(CharacterName))
-        characterName = CharacterName.PinkMan
-        playerData = self.data.characters[characterName]
-        backgroundName = random.choice(list(BackgroundName))
-        backgroundData = self.data.backgrounds[backgroundName]
-
+        mapData = Utils.readJSONFile(self.rootPath/settings['startMapData'])
+        for idx, layer in enumerate(mapData['layers']):
+            mapData['layers'][idx]['data'] = np.loadtxt(
+                self.rootPath/layer['path'], delimiter=',', dtype=int
+            )
         self.map = Map(
-            map=map, playerData=playerData,
-            tilesetData=self.data.tilesets[TilesetName.Terrain],
-            backgroundData=backgroundData
+            mapData=mapData,
+            tilesetData=self.data.tilesets,
+            playerData=self.data.characters[random.choice(list(CharacterName))],
+            backgroundData=self.data.backgrounds[random.choice(list(BackgroundName))]
         )
         self.clock = pygame.time.Clock()
 
@@ -53,8 +52,8 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         pygame.quit()
                         sys.exit()
-
-            self.map.update(self.screen)
+            self.map.update()
+            self.map.draw(self.screen)
 
             pygame.display.update()
-            self.clock.tick(60)
+            self.clock.tick(self.FPS)
