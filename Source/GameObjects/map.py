@@ -38,7 +38,6 @@ class Map:
 
     def setupMap(self, mapData: dict, tilesetData: dict[TilesetName, TilesetData]) -> None:
         self.staticTiles = pygame.sprite.Group()
-        self.oneWayCollisionStaticTile = pygame.sprite.Group()
         for layer in mapData['layers']:
             for rowIndex, row in enumerate(layer['data']):
                 for colIndex, tileIndex in enumerate(row):
@@ -48,19 +47,18 @@ class Map:
                         tile = StaticTile(
                             position, tilesetData[TilesetName(layer['tileset'])].surfaces[tileIndex]
                         )
-                        self.staticTiles.add(tile)
                     elif layer['class'] == 'OneWayCollisionStaticTile':
                         tile = OneWayCollisionStaticTile(
                             position, tilesetData[TilesetName(layer['tileset'])].surfaces[tileIndex], layer['hitbox']
                         )
-                        self.oneWayCollisionStaticTile.add(tile)
+                    self.staticTiles.add(tile)
         return None
 
     def handlePlayerHorizontalMovementCollision(self) -> list[Tile]:
         self.player.sprite.horizontalMove()
         horizontalCollisionTiles = [
             tile for tile in self.staticTiles.sprites()
-            if tile.rect.colliderect(self.player.sprite.hitbox)
+            if tile.isCollide(self.player.sprite)
         ]
         for tile in horizontalCollisionTiles:
             if self.player.sprite.velocity.x < 0:
@@ -73,17 +71,8 @@ class Map:
         self.player.sprite.veticalMove()
         verticalColitionTiles = [
             tile for tile in self.staticTiles.sprites()
-            if tile.rect.colliderect(self.player.sprite.hitbox)
+            if tile.isCollide(self.player.sprite)
         ]
-
-        # Collision with one way colision static tile (only from top)
-        for tile in self.oneWayCollisionStaticTile.sprites():
-            if not tile.rect.colliderect(self.player.sprite.hitbox):
-                continue
-            if self.player.sprite.velocity.y <= 0:
-                continue
-            if self.player.sprite.trackingPosition[1] <= tile.rect.midbottom[1] <= self.player.sprite.hitbox.midbottom[1]:
-                verticalColitionTiles.append(tile)
 
         for tile in verticalColitionTiles:
             if self.player.sprite.velocity.y > 0:
@@ -115,7 +104,6 @@ class Map:
     def draw(self, screen) -> None:
         self.background.draw(screen)
         self.staticTiles.draw(screen)
-        self.oneWayCollisionStaticTile.draw(screen)
         self.player.draw(screen)
         return None
 
