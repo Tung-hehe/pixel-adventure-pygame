@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pygame
 
 from .background import Background
@@ -73,7 +71,6 @@ class Map:
             tile for tile in self.staticTiles.sprites()
             if tile.isCollide(self.player.sprite)
         ]
-
         for tile in verticalColitionTiles:
             if self.player.sprite.velocity.y > 0:
                 self.player.sprite.hitbox.bottom = tile.rect.top
