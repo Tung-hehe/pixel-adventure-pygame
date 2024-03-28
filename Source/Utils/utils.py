@@ -8,7 +8,7 @@ import pygame
 class Utils:
 
     @classmethod
-    def readJSONFile(cls, path: Path) -> dict:
+    def readJSONFile(cls, path: Path) -> dict[str, dict]:
         with open(path, 'r') as f:
             dataDict = json.load(f)
         return dataDict

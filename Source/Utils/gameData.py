@@ -13,10 +13,17 @@ from Source.enums import (
 
 class CharacterData:
 
-    def __init__(self, rootPath: Path, characterName: CharacterName) -> None:
+    def __init__(self,
+            rootPath: Path,
+            characterName: CharacterName,
+            commonCharatersSetting: dict[str, dict]
+        ) -> None:
         dataDict = Utils.readJSONFile(rootPath/f'Data/Characters/{characterName.value}.json')
         for k, v in dataDict['settings'].items():
             setattr(self, k, v)
+        for k, v in commonCharatersSetting['settings'].items():
+            if k not in dataDict['settings'].keys():
+                setattr(self, k, v)
         self.createAnimations(rootPath, dataDict['assets']['animations'])
         return None
 
@@ -25,7 +32,10 @@ class CharacterData:
         for status in self.animations.keys():
             path = rootPath / animationData['path'] / f'{status.value}.png'
             self.animations[status] = Utils.getSurfaceListFromSpritesheets(
-                path=path, width=animationData['width'], height=animationData['height'], scale=animationData['scale']
+                path=path,
+                width=animationData['width'],
+                height=animationData['height'],
+                scale=animationData['scale']
             )
         return None
 
@@ -41,17 +51,18 @@ class TilesetData:
 
 class BackgroundData:
 
-    def __init__(self, rootPath: Path, backgroundName: BackgroundName) -> None:
-        dataDict = Utils.readJSONFile(rootPath/f'Data/Backgrounds/{backgroundName.value}.json')
-        self.createImage(rootPath, dataDict['assets']['image'])
+    def __init__(self, rootPath: Path, backgroundName: BackgroundName, dataDict: dict[str, dict]) -> None:
+        self.createImage(rootPath, backgroundName, dataDict['image'])
         for k, v in dataDict['setting'].items():
             setattr(self, k, v)
-        self.width = dataDict['assets']['image']['width'] * dataDict['assets']['image']['scale']
-        self.height = dataDict['assets']['image']['height'] * dataDict['assets']['image']['scale']
+        self.width = dataDict['image']['width'] * dataDict['image']['scale']
+        self.height = dataDict['image']['height'] * dataDict['image']['scale']
         return None
 
-    def createImage(self, rootPath: Path, imageData: dict) -> None:
-        backgroundImage = pygame.image.load(rootPath/imageData['path']).convert_alpha()
+    def createImage(self, rootPath: Path, backgroundName: BackgroundName,imageData: dict) -> None:
+        backgroundImage = pygame.image.load(
+            rootPath/f'Assets/Image/Background/{backgroundName.value}.png'
+        ).convert_alpha()
         self.image = pygame.Surface((imageData['width'], imageData['height']), pygame.SRCALPHA).convert_alpha()
         self.image.blit(backgroundImage, (0, 0), (0, 0, imageData['width'], imageData['height']))
         if imageData['scale'] > 1:
@@ -64,16 +75,18 @@ class BackgroundData:
 class GameData:
 
     def __init__(self, rootPath: Path) -> None:
+        commonCharatersSetting = Utils.readJSONFile(rootPath/f'Data/Characters/Common.json')
         self.characters = {
-            characterName: CharacterData(rootPath, characterName)
+            characterName: CharacterData(rootPath, characterName, commonCharatersSetting)
             for characterName in CharacterName
         }
         self.tilesets = {
             tilesetName: TilesetData(rootPath, tilesetName)
             for tilesetName in TilesetName
         }
+        backgroundSettings = Utils.readJSONFile(rootPath/f'Data/Backgrounds.json')
         self.backgrounds = {
-            backgroundName: BackgroundData(rootPath, backgroundName)
+            backgroundName: BackgroundData(rootPath, backgroundName, backgroundSettings)
             for backgroundName in BackgroundName
         }
         return None
