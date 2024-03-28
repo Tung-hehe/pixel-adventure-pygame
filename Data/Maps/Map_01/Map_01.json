@@ -4,15 +4,36 @@
     "playerPosition": [100, 100],
     "layers": [
         {
+            "type": "Tile",
             "class": "StaticTile",
-            "path": "Data/Maps/Map_01/Terrain.csv",
-            "tileset": "Terrain"
+            "path": "Data/Maps/Map_01/Map_01_Terrain.csv",
+            "tileset": "Terrain",
+            "canCling": false
         },
         {
-            "class": "OneWayCollisionStaticTile",
-            "path": "Data/Maps/Map_01/Platform.csv",
+            "type": "Tile",
+            "class": "StaticTile",
+            "path": "Data/Maps/Map_01/Map_01_ClingTerrain.csv",
             "tileset": "Terrain",
-            "hitbox": [32, 1]
+            "canCling": true
+        },
+        {
+            "type": "Tile",
+            "class": "OneWayCollisionStaticTile",
+            "path": "Data/Maps/Map_01/Map_01_Platform.csv",
+            "tileset": "Terrain",
+            "hitbox": [32, 1],
+            "canCling": false
+        },
+        {
+            "type": "Object",
+            "class": "Player",
+            "path": "Data/Maps/Map_01/Map_01_Player.csv"
+        },
+        {
+            "type": "Object",
+            "class": "Fruit",
+            "path": "Data/Maps/Map_01/Map_01_Fruit.csv"
         }
     ]
 }

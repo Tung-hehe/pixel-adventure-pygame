@@ -56,8 +56,15 @@ class Character(pygame.sprite.Sprite):
                 self.jumpOnAirCount += 1
         else:
             if self.relativePosition == CharacterRelativePosition.OnWall:
-                self.velocity.x = 0
-            self.velocity.y = self.data.jumpSpeed
+                if self.facing == CharacterFacing.Left:
+                    self.facing = CharacterFacing.Right
+                    self.velocity.x = self.data.bounceOffWall
+                else:
+                    self.facing = CharacterFacing.Left
+                    self.velocity.x = - self.data.bounceOffWall
+                self.velocity.y = self.data.jumpOffWall
+            else:
+                self.velocity.y = self.data.jumpSpeed
         return None
 
     def updateStatus(self) -> None:

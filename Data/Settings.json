@@ -1,6 +1,6 @@
 {
     "startMapData": "Data/Maps/Map_01/Map_01.json",
-    "screenWidth": 1074,
+    "screenWidth": 1024,
     "screenHeight": 576,
     "FPS": 60
 }
