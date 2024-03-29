@@ -9,9 +9,9 @@
     "settings": {
         "runSpeed": 4,
         "gravity": 0.8,
-        "wallFriction": 0.7,
+        "wallFriction": 0.75,
         "jumpSpeed": -12,
-        "hitboxWidth": 40,
+        "hitboxWidth": 36,
         "hitboxHeight": 50,
         "animationSpeed": 0.25,
         "limitJumpOnAir": 1,
