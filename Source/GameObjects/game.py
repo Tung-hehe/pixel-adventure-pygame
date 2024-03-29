@@ -13,8 +13,8 @@ from Source.Utils import (
 )
 
 from Source.enums import (
-    CharacterName,
-    BackgroundName
+    BackgroundName,
+    CharacterName
 )
 
 
@@ -38,7 +38,8 @@ class Game:
             mapData=mapData,
             tilesetData=self.data.tilesets,
             playerData=self.data.characters[random.choice(list(CharacterName))],
-            backgroundData=self.data.backgrounds[random.choice(list(BackgroundName))]
+            backgroundData=self.data.backgrounds[random.choice(list(BackgroundName))],
+            fruitsData=self.data.fruits
         )
         self.clock = pygame.time.Clock()
 

@@ -1,8 +1,11 @@
+import random
+
 import numpy as np
 import pygame
 
 from .background import Background
 from .character import Character
+from .fruit import Fruit
 from .tile import (
     Tile,
     StaticTile,
@@ -12,12 +15,14 @@ from .tile import (
 from Source.Utils import (
     BackgroundData,
     CharacterData,
+    FruitData,
     TilesetData
 )
 from Source.enums import (
     CharacterStatus,
     CharacterRelativePosition,
-    TilesetName,
+    FruitName,
+    TilesetName
 )
 
 
@@ -27,62 +32,67 @@ class Map:
             mapData: dict,
             playerData: CharacterData,
             tilesetData: dict[TilesetName, TilesetData],
-            backgroundData: BackgroundData
+            backgroundData: BackgroundData,
+            fruitsData: dict[FruitName: FruitData]
         ) -> None:
-        self.setupMap(playerData, mapData, tilesetData)
+        self.setupMap(playerData, mapData, tilesetData, fruitsData)
         self.background = Background(backgroundData)
         return None
 
     def setupMap(self,
             playerData: CharacterData,
             mapData: dict,
-            tilesetData: dict[TilesetName, TilesetData]
+            tilesetData: dict[TilesetName, TilesetData],
+            fruitsData: dict[FruitName: FruitData]
         ) -> None:
         self.staticTiles = pygame.sprite.Group()
+        self.fruits = pygame.sprite.Group()
         for layer in mapData['layers']:
-            match layer["type"]:
-                case "Tile":
-                    tileset = tilesetData[TilesetName(layer['tileset'])]
+            if layer["type"] == "Tile":
+                tileset = tilesetData[TilesetName(layer['tileset'])]
+                for rowIndex, row in enumerate(layer['data']):
+                    for colIndex, tileIndex in enumerate(row):
+                        if tileIndex == -1: continue
+                        position = (colIndex * mapData['tileWidth'], (rowIndex + 1) * mapData['tileHeight'])
+                        if layer['class'] == 'StaticTile':
+                            tile = StaticTile(
+                                position=position,
+                                surface=tileset.surfaces[tileIndex],
+                                canCling=layer['canCling']
+                            )
+                        elif layer['class'] == 'OneWayCollisionStaticTile':
+                            tile = OneWayCollisionStaticTile(
+                                position=position,
+                                surface=tileset.surfaces[tileIndex],
+                                hitbox=layer['hitbox'],
+                                canCling=layer['canCling']
+                            )
+                        self.staticTiles.add(tile)
+            elif layer["type"] == "Object":
+                if layer['class'] == "Player":
+                    coordinateX = np.where(layer['data'] != -1)[1]
+                    coordinateY = np.where(layer['data'] != -1)[0]
+                    if len(coordinateX) > 1 or len(coordinateY) > 1:
+                        raise ValueError("More than one player")
+                    elif len(coordinateX) == 1 and len(coordinateY) == 1:
+                        coordinateX = coordinateX[0]
+                        coordinateY = coordinateY[0]
+                        position = (coordinateX * mapData['tileWidth'], (coordinateY + 1) * mapData['tileHeight'])
+                        self.player = pygame.sprite.GroupSingle()
+                        self.player.add(Character(position=position, startState=layer["startState"], data=playerData))
+                    else:
+                        pass
+                elif layer['class'] == "Fruit":
                     for rowIndex, row in enumerate(layer['data']):
                         for colIndex, tileIndex in enumerate(row):
                             if tileIndex == -1: continue
                             position = (colIndex * mapData['tileWidth'], (rowIndex + 1) * mapData['tileHeight'])
-                            if layer['class'] == 'StaticTile':
-                                tile = StaticTile(
-                                    position=position,
-                                    surface=tileset.surfaces[tileIndex],
-                                    canCling=layer['canCling']
-                                )
-                            elif layer['class'] == 'OneWayCollisionStaticTile':
-                                tile = OneWayCollisionStaticTile(
-                                    position=position,
-                                    surface=tileset.surfaces[tileIndex],
-                                    hitbox=layer['hitbox'],
-                                    canCling=layer['canCling']
-                                )
-                            self.staticTiles.add(tile)
-                case "Object":
-                    if layer['class'] == "Player":
-                        coordinateX = np.where(layer['data'] != -1)[1]
-                        coordinateY = np.where(layer['data'] != -1)[0]
-                        if len(coordinateX) > 1 or len(coordinateY) > 1:
-                            raise ValueError("More than one player")
-                        elif len(coordinateX) == 1 and len(coordinateY) == 1:
-                            coordinateX = coordinateX[0]
-                            coordinateY = coordinateY[0]
-                            position = (coordinateX * mapData['tileWidth'], coordinateY * mapData['tileHeight'])
-                            self.player = pygame.sprite.GroupSingle()
-                            self.player.add(Character(position=position, data=playerData))
-                        else:
-                            pass
+                            self.fruits.add(Fruit(position, fruitsData[random.choice(list(FruitName))]))
         return None
 
     def handlePlayerHorizontalMovementCollision(self) -> list[Tile]:
         self.player.sprite.horizontalMove()
-        horizontalCollisionTiles = [
-            tile for tile in self.staticTiles.sprites()
-            if tile.isCollide(self.player.sprite)
-        ]
+        horizontalCollisionTiles = [tile for tile in self.staticTiles.sprites() if tile.isCollide(self.player.sprite)]
         canCling = False
         for tile in horizontalCollisionTiles:
             if tile.canCling:
@@ -132,10 +142,12 @@ class Map:
         self.background.draw(screen)
         self.staticTiles.draw(screen)
         self.player.draw(screen)
+        self.fruits.draw(screen)
         return None
 
     def update(self) -> None:
         self.background.scroll()
         self.handlePlayerMovementCollision()
         self.player.update()
+        self.fruits.update()
         return None

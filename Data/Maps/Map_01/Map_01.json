@@ -28,7 +28,12 @@
         {
             "type": "Object",
             "class": "Player",
-            "path": "Data/Maps/Map_01/Map_01_Player.csv"
+            "path": "Data/Maps/Map_01/Map_01_Player.csv",
+            "startState": {
+                "facing": "Right",
+                "status": "Idle",
+                "relativePosition": "OnGround"
+            }
         },
         {
             "type": "Object",

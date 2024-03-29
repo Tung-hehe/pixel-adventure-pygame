@@ -45,7 +45,7 @@ class BackgroundName(Enum):
 class FruitName(Enum):
     Apple = 'Apple'
     Bananas = 'Bananas'
-    Cheries = 'Cheries'
+    Cherries = 'Cherries'
     Kiwi = 'Kiwi'
     Melon = 'Melon'
     Orange = 'Orange'

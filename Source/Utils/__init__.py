@@ -1,7 +1,9 @@
-from .utils import Utils
+from .collition import Collition
 from .gameData import (
-    GameData,
+    BackgroundData,
     CharacterData,
+    FruitData,
+    GameData,
     TilesetData,
-    BackgroundData
 )
+from .utils import Utils

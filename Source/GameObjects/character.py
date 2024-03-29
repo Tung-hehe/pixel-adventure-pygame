@@ -10,14 +10,14 @@ from Source.enums import (
 
 class Character(pygame.sprite.Sprite):
 
-    def __init__(self, position: tuple, data: CharacterData) -> None:
+    def __init__(self, position: tuple, startState: dict, data: CharacterData) -> None:
         super().__init__()
         self.data = data
         # Player status
-        self.status = CharacterStatus.Idle
+        self.status = CharacterStatus[startState["status"]]
         self.jumpOnAirCount = 0
-        self.facing = CharacterFacing.Right
-        self.relativePosition = CharacterRelativePosition.OnAir
+        self.facing = CharacterFacing[startState["facing"]]
+        self.relativePosition = CharacterRelativePosition[startState["relativePosition"]]
         self.trackingPosition = position
         # Player image
         self.frameIndex = 0
@@ -25,7 +25,7 @@ class Character(pygame.sprite.Sprite):
         #Player velocity
         self.velocity = pygame.math.Vector2(0, 0)
         # Player hitbox
-        self.rect = self.image.get_rect(topleft=position)
+        self.rect = self.image.get_rect(bottomleft=position)
         self.hitbox = pygame.Rect(position, (data.hitboxWidth, data.hitboxHeight))
         self.hitbox.midbottom = self.rect.midbottom
         return None

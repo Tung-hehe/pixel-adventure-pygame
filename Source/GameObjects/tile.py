@@ -1,5 +1,7 @@
 import pygame
 
+from Source.Utils import Collition
+
 
 class Tile(pygame.sprite.Sprite):
 
@@ -11,7 +13,7 @@ class Tile(pygame.sprite.Sprite):
         return None
 
     def isCollide(self, object: pygame.sprite.Sprite) -> bool:
-        return self.rect.colliderect(object.hitbox)
+        return Collition.rectCollision(self.rect, object.hitbox)
 
 class StaticTile(Tile):
 
@@ -28,9 +30,4 @@ class OneWayCollisionStaticTile(StaticTile):
         return None
 
     def isCollide(self, object: pygame.sprite.Sprite) -> bool:
-        if not self.rect.colliderect(object.hitbox):
-            return False
-        if object.velocity.y <= 0:
-            return False
-        if object.trackingPosition[1] <= self.rect.midtop[1] <= object.hitbox.midbottom[1]:
-            return True
+        return Collition.oneWayCollisionWithObject(self.rect, object)
