@@ -5,6 +5,7 @@ import pygame
 
 from .background import Background
 from .character import Character
+from .effect import Effect
 from .fruit import Fruit
 from .tile import (
     Tile,
@@ -15,12 +16,15 @@ from .tile import (
 from Source.Utils import (
     BackgroundData,
     CharacterData,
+    Collition,
+    EffectData,
     FruitData,
-    TilesetData
+    TilesetData,
 )
 from Source.enums import (
     CharacterStatus,
     CharacterRelativePosition,
+    EffectName,
     FruitName,
     TilesetName
 )
@@ -33,9 +37,10 @@ class Map:
             playerData: CharacterData,
             tilesetData: dict[TilesetName, TilesetData],
             backgroundData: BackgroundData,
-            fruitsData: dict[FruitName: FruitData]
+            fruitsData: dict[FruitName: FruitData],
+            effectData: dict[EffectName: EffectData]
         ) -> None:
-        self.setupMap(playerData, mapData, tilesetData, fruitsData)
+        self.setupMap(playerData, mapData, tilesetData, fruitsData, effectData)
         self.background = Background(backgroundData)
         return None
 
@@ -43,17 +48,23 @@ class Map:
             playerData: CharacterData,
             mapData: dict,
             tilesetData: dict[TilesetName, TilesetData],
-            fruitsData: dict[FruitName: FruitData]
+            fruitsData: dict[FruitName: FruitData],
+            effectData: dict[EffectName: EffectData]
         ) -> None:
         self.staticTiles = pygame.sprite.Group()
         self.fruits = pygame.sprite.Group()
+        self.collectFruitEffects = pygame.sprite.Group()
+        self.collectFruitData = effectData[EffectName.CollectFruit]
         for layer in mapData['layers']:
             if layer["type"] == "Tile":
                 tileset = tilesetData[TilesetName(layer['tileset'])]
                 for rowIndex, row in enumerate(layer['data']):
                     for colIndex, tileIndex in enumerate(row):
                         if tileIndex == -1: continue
-                        position = (colIndex * mapData['tileWidth'], (rowIndex + 1) * mapData['tileHeight'])
+                        position = (
+                            colIndex * mapData['tileWidth'],
+                            (rowIndex + 1) * mapData['tileHeight']
+                        )
                         if layer['class'] == 'StaticTile':
                             tile = StaticTile(
                                 position=position,
@@ -77,22 +88,44 @@ class Map:
                     elif len(coordinateX) == 1 and len(coordinateY) == 1:
                         coordinateX = coordinateX[0]
                         coordinateY = coordinateY[0]
-                        position = (coordinateX * mapData['tileWidth'], (coordinateY + 1) * mapData['tileHeight'])
+                        position = (
+                            coordinateX * mapData['tileWidth'],
+                            (coordinateY + 1) * mapData['tileHeight']
+                        )
                         self.player = pygame.sprite.GroupSingle()
-                        self.player.add(Character(position=position, startState=layer["startState"], data=playerData))
+                        self.player.add(
+                            Character(
+                                position=position,
+                                startState=layer["startState"],
+                                data=playerData,
+                                effectsData={
+                                    k: effectData[k] for k in [
+                                        EffectName.Run,
+                                        EffectName.Jump,
+                                        EffectName.Land
+                                    ]
+                                }
+                            )
+                        )
                     else:
                         pass
                 elif layer['class'] == "Fruit":
                     for rowIndex, row in enumerate(layer['data']):
                         for colIndex, tileIndex in enumerate(row):
                             if tileIndex == -1: continue
-                            position = (colIndex * mapData['tileWidth'], (rowIndex + 1) * mapData['tileHeight'])
+                            position = (
+                                colIndex * mapData['tileWidth'],
+                                (rowIndex + 1) * mapData['tileHeight']
+                            )
                             self.fruits.add(Fruit(position, fruitsData[random.choice(list(FruitName))]))
         return None
 
     def handlePlayerHorizontalMovementCollision(self) -> list[Tile]:
         self.player.sprite.horizontalMove()
-        horizontalCollisionTiles = [tile for tile in self.staticTiles.sprites() if tile.isCollide(self.player.sprite)]
+        horizontalCollisionTiles = [
+            tile for tile in self.staticTiles.sprites()
+            if tile.isCollide(self.player.sprite)
+        ]
         canCling = False
         for tile in horizontalCollisionTiles:
             if tile.canCling:
@@ -121,6 +154,18 @@ class Map:
                 self.player.sprite.velocity.y = 0
         return verticalColitionTiles
 
+    def collectFruit(self) -> None:
+        for fruit in self.fruits.sprites():
+            if Collition.rectCollision(self.player.sprite.hitbox, fruit.hitbox):
+                # NOTE. Add score here
+                self.collectFruitEffects.add(Effect(
+                    position=fruit.hitbox.center,
+                    effectData=self.collectFruitData,
+                    relativePosition='center'
+                ))
+                fruit.kill()
+        return None
+
     def handlePlayerMovementCollision(self) -> None:
         self.player.sprite.trackingPosition = self.player.sprite.hitbox.midbottom
         canCling, horizontalCollisionTiles = self.handlePlayerHorizontalMovementCollision()
@@ -134,6 +179,8 @@ class Map:
             ):
                 self.player.sprite.velocity.y = 0
                 self.player.sprite.relativePosition = CharacterRelativePosition.OnWall
+            elif not verticalColitionTiles and not canCling:
+                self.player.sprite.relativePosition = CharacterRelativePosition.OnAir
         elif not verticalColitionTiles:
             self.player.sprite.relativePosition = CharacterRelativePosition.OnAir
         return None
@@ -141,13 +188,17 @@ class Map:
     def draw(self, screen) -> None:
         self.background.draw(screen)
         self.staticTiles.draw(screen)
-        self.player.draw(screen)
         self.fruits.draw(screen)
+        self.player.draw(screen)
+        self.player.sprite.effects.draw(screen)
+        self.collectFruitEffects.draw(screen)
         return None
 
     def update(self) -> None:
         self.background.scroll()
         self.handlePlayerMovementCollision()
+        self.collectFruit()
         self.player.update()
         self.fruits.update()
+        self.collectFruitEffects.update()
         return None

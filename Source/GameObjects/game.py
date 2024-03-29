@@ -39,7 +39,8 @@ class Game:
             tilesetData=self.data.tilesets,
             playerData=self.data.characters[random.choice(list(CharacterName))],
             backgroundData=self.data.backgrounds[random.choice(list(BackgroundName))],
-            fruitsData=self.data.fruits
+            fruitsData=self.data.fruits,
+            effectData = self.data.effects,
         )
         self.clock = pygame.time.Clock()
 

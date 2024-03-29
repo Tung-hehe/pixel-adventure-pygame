@@ -3,5 +3,5 @@
     "height": 64,
     "scale": 1,
     "animationSpeed": 0.25,
-    "hitbox": [32, 32]
+    "hitbox": [28, 28]
 }

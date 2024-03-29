@@ -52,6 +52,12 @@ class FruitName(Enum):
     Pineapple = 'Pineapple'
     Strawberry = 'Strawberry'
 
+class EffectName(Enum):
+    Run = "Run"
+    Jump = "Jump"
+    Land = "Land"
+    CollectFruit = "CollectFruit"
+
 
 class EnemyName(Enum):
     AngryPig = 'AngryPig'

@@ -7,9 +7,26 @@ from Source.enums import (
     BackgroundName,
     CharacterName,
     CharacterStatus,
+    EffectName,
     FruitName,
     TilesetName,
 )
+
+
+class EffectData:
+
+    def __init__(self,
+            rootPath: Path,
+            effectData: dict[str, dict]
+        ) -> None:
+        self.animation = Utils.getSurfaceListFromSpritesheets(
+            path=rootPath / effectData['animation']['path'],
+            width=effectData['animation']['width'],
+            height=effectData['animation']['height'],
+            scale=effectData['animation']['scale']
+        )
+        self.setting = effectData['setting']
+        return None
 
 
 class CharacterData:
@@ -17,7 +34,7 @@ class CharacterData:
     def __init__(self,
             rootPath: Path,
             characterName: CharacterName,
-            commonCharatersSetting: dict[str, dict]
+            commonCharatersSetting: dict[str, dict],
         ) -> None:
         dataDict = Utils.readJSONFile(rootPath/f'Data/Characters/{characterName.value}.json')
         for k, v in commonCharatersSetting['assets']['animations'].items():
@@ -96,39 +113,49 @@ class FruitData:
 class GameData:
 
     def __init__(self, rootPath: Path) -> None:
-        self.getCharacterData(rootPath=rootPath)
-        self.getTilesetData(rootPath=rootPath)
-        self.getBackgroundData(rootPath=rootPath)
-        self.getFruitData(rootPath=rootPath)
+        self.characters = self.getCharacterData(rootPath=rootPath)
+        self.tilesets = self.getTilesetData(rootPath=rootPath)
+        self.backgrounds = self.getBackgroundData(rootPath=rootPath)
+        self.fruits = self.getFruitData(rootPath=rootPath)
+        self.effects = self.getEffectData(rootPath=rootPath)
         return None
 
-    def getCharacterData(self,rootPath: Path) -> None:
+    def getCharacterData(self,
+            rootPath: Path,
+        ) -> dict[CharacterName, CharacterData]:
         commonCharatersSetting = Utils.readJSONFile(rootPath/f'Data/Characters/Common.json')
-        self.characters = {
+        characters = {
             characterName: CharacterData(rootPath, characterName, commonCharatersSetting)
             for characterName in CharacterName
         }
-        return None
+        return characters
 
-    def getTilesetData(self, rootPath: Path) -> None:
-        self.tilesets = {
+    def getTilesetData(self, rootPath: Path) -> dict[TilesetName, TilesetData]:
+        tilesets = {
             tilesetName: TilesetData(rootPath, tilesetName)
             for tilesetName in TilesetName
         }
-        return None
+        return tilesets
 
-    def getBackgroundData(self, rootPath: Path) -> None:
+    def getBackgroundData(self, rootPath: Path) -> dict[BackgroundName, BackgroundData]:
         backgroundSettings = Utils.readJSONFile(rootPath/f'Data/Backgrounds.json')
-        self.backgrounds = {
+        backgrounds = {
             backgroundName: BackgroundData(rootPath, backgroundName, backgroundSettings)
             for backgroundName in BackgroundName
         }
-        return None
+        return backgrounds
 
-    def getFruitData(self, rootPath: Path) -> None:
+    def getFruitData(self, rootPath: Path) -> dict[FruitName, FruitData]:
         fruitSetting = Utils.readJSONFile(rootPath/f'Data/Items/Fruit.json')
-        self.fruits = {
+        fruits = {
             fruitName: FruitData(rootPath, fruitName, fruitSetting)
             for fruitName in FruitName
         }
-        return None
+        return fruits
+
+    def getEffectData(self, rootPath: Path) -> dict[EffectName, EffectData]:
+        effectData = Utils.readJSONFile(rootPath/f'Data/Effects.json')
+        effects = {
+            EffectName[k]: EffectData(rootPath, v) for k, v  in effectData.items()
+        }
+        return effects

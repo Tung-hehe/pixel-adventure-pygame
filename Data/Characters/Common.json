@@ -7,7 +7,7 @@
         }
     },
     "settings": {
-        "runSpeed": 5,
+        "runSpeed": 4,
         "gravity": 0.8,
         "wallFriction": 0.7,
         "jumpSpeed": -12,
@@ -17,6 +17,9 @@
         "limitJumpOnAir": 1,
         "jumpOnAirSpeed": [-10],
         "jumpOffWall": -10,
-        "bounceOffWall": 32
+        "bounceOffWall": 32,
+
+        "spawnRunDustFrames": [5, 11],
+        "spawnClingWallDustFrames": [0]
     }
 }

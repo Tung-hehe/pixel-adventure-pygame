@@ -2,9 +2,9 @@
     "image": {
         "width": 64,
         "height": 64,
-        "scale": 2
+        "scale": 4
     },
     "setting": {
-        "scrollSpeed": 0.02
+        "scrollSpeed": 0.01
     }
 }

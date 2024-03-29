@@ -1,16 +1,26 @@
 import pygame
 
-from Source.Utils import CharacterData
+from .effect import Effect
+from Source.Utils import (
+    CharacterData,
+    EffectData
+)
 from Source.enums import (
     CharacterStatus,
     CharacterFacing,
     CharacterRelativePosition,
+    EffectName,
 )
 
 
 class Character(pygame.sprite.Sprite):
 
-    def __init__(self, position: tuple, startState: dict, data: CharacterData) -> None:
+    def __init__(self,
+            position: tuple,
+            startState: dict,
+            data: CharacterData,
+            effectsData: dict[EffectName: EffectData]
+        ) -> None:
         super().__init__()
         self.data = data
         # Player status
@@ -19,6 +29,8 @@ class Character(pygame.sprite.Sprite):
         self.facing = CharacterFacing[startState["facing"]]
         self.relativePosition = CharacterRelativePosition[startState["relativePosition"]]
         self.trackingPosition = position
+        self.effectsData = effectsData
+        self.effects = pygame.sprite.Group()
         # Player image
         self.frameIndex = 0
         self.image = self.data.animations[self.status][self.frameIndex]
@@ -51,6 +63,8 @@ class Character(pygame.sprite.Sprite):
     def jump(self) -> None:
         if self.relativePosition == CharacterRelativePosition.OnAir:
             if self.status == CharacterStatus.Fall and self.jumpOnAirCount < self.data.limitJumpOnAir:
+                if self.status != CharacterStatus.JumpOnAir:
+                    self.effects.add(Effect(self.rect.midbottom, self.effectsData[EffectName.Jump]))
                 self.status = CharacterStatus.JumpOnAir
                 self.velocity.y = self.data.jumpOnAirSpeed[self.jumpOnAirCount]
                 self.jumpOnAirCount += 1
@@ -59,11 +73,23 @@ class Character(pygame.sprite.Sprite):
                 if self.facing == CharacterFacing.Left:
                     self.facing = CharacterFacing.Right
                     self.velocity.x = self.data.bounceOffWall
+                    relativePosition = 'midleft'
+                    rotation = -90
                 else:
                     self.facing = CharacterFacing.Left
                     self.velocity.x = - self.data.bounceOffWall
+                    relativePosition = 'midright'
+                    rotation = 90
+                self.effects.add(Effect(
+                    position=getattr(self.hitbox, relativePosition),
+                    effectData=self.effectsData[EffectName.Jump],
+                    relativePosition=relativePosition,
+                    rotation=rotation
+                ))
                 self.velocity.y = self.data.jumpOffWall
             else:
+                if self.status != CharacterStatus.Jump:
+                    self.effects.add(Effect(self.rect.midbottom, self.effectsData[EffectName.Jump]))
                 self.velocity.y = self.data.jumpSpeed
         return None
 
@@ -76,13 +102,46 @@ class Character(pygame.sprite.Sprite):
                 self.status = CharacterStatus.Fall
             elif self.relativePosition == CharacterRelativePosition.OnWall:
                 self.status = CharacterStatus.ClingWall
+                if self.frameIndex in self.data.spawnClingWallDustFrames:
+                    if self.facing == CharacterFacing.Left:
+                        relativePosition = 'topleft'
+                        rotation = -90
+                    else:
+                        relativePosition = 'topright'
+                        rotation = 90
+                    self.effects.add(Effect(
+                        getattr(self.hitbox, relativePosition),
+                        self.effectsData[EffectName.Run],
+                        relativePosition=relativePosition,
+                        rotation=rotation
+                    ))
         else:
             if self.velocity.x != 0:
                 if self.relativePosition == CharacterRelativePosition.OnGround:
+                    if self.status == CharacterStatus.Fall:
+                        self.effects.add(Effect(
+                            self.rect.midbottom,
+                            self.effectsData[EffectName.Land],
+                        ))
                     self.status = CharacterStatus.Run
+                    if self.frameIndex in self.data.spawnRunDustFrames:
+                        if self.facing == CharacterFacing.Right:
+                            relativePosition = 'bottomleft'
+                        else:
+                            relativePosition = 'bottomright'
+                        self.effects.add(Effect(
+                            getattr(self.hitbox, relativePosition),
+                            self.effectsData[EffectName.Run],
+                            relativePosition=relativePosition,
+                        ))
                 elif self.relativePosition == CharacterRelativePosition.OnWall:
                     self.status = CharacterStatus.ClingWall
             else:
+                if self.status == CharacterStatus.Fall:
+                    self.effects.add(Effect(
+                        self.rect.midbottom,
+                        self.effectsData[EffectName.Land]
+                    ))
                 self.status = CharacterStatus.Idle
         return None
 
@@ -119,4 +178,5 @@ class Character(pygame.sprite.Sprite):
         self.handleEvent()
         self.updateStatus()
         self.updateImage()
+        self.effects.update()
         return None
