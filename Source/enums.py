@@ -42,6 +42,7 @@ class BackgroundName(Enum):
     Purple = 'Purple'
     Yellow = 'Yellow'
 
+
 class FruitName(Enum):
     Apple = 'Apple'
     Bananas = 'Bananas'
@@ -51,6 +52,7 @@ class FruitName(Enum):
     Orange = 'Orange'
     Pineapple = 'Pineapple'
     Strawberry = 'Strawberry'
+
 
 class EffectName(Enum):
     Run = "Run"

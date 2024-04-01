@@ -15,11 +15,13 @@ class Tile(pygame.sprite.Sprite):
     def isCollide(self, object: pygame.sprite.Sprite) -> bool:
         return Collition.rectCollision(self.rect, object.hitbox)
 
+
 class StaticTile(Tile):
 
     def __init__(self, position: tuple, surface: pygame.Surface, canCling: bool) -> None:
         super().__init__(position, surface, canCling)
         return None
+
 
 class OneWayCollisionStaticTile(StaticTile):
 

@@ -2,23 +2,22 @@
     "tileWidth": 16,
     "tileHeight": 16,
     "playerPosition": [100, 100],
+    "traps": [],
+    "enemies": [],
     "layers": [
         {
-            "type": "Tile",
             "class": "StaticTile",
             "path": "Data/Maps/Map_01/Map_01_Terrain.csv",
             "tileset": "Terrain",
             "canCling": false
         },
         {
-            "type": "Tile",
             "class": "StaticTile",
             "path": "Data/Maps/Map_01/Map_01_ClingTerrain.csv",
             "tileset": "Terrain",
             "canCling": true
         },
         {
-            "type": "Tile",
             "class": "OneWayCollisionStaticTile",
             "path": "Data/Maps/Map_01/Map_01_Platform.csv",
             "tileset": "Terrain",
@@ -26,8 +25,7 @@
             "canCling": false
         },
         {
-            "type": "Object",
-            "class": "Player",
+            "class": "Character",
             "path": "Data/Maps/Map_01/Map_01_Player.csv",
             "startState": {
                 "facing": "Right",
@@ -36,7 +34,6 @@
             }
         },
         {
-            "type": "Object",
             "class": "Fruit",
             "path": "Data/Maps/Map_01/Map_01_Fruit.csv"
         }

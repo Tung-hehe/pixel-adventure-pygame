@@ -16,7 +16,7 @@ from Source.enums import (
 class Character(pygame.sprite.Sprite):
 
     def __init__(self,
-            position: tuple,
+            position: tuple[int, int],
             startState: dict,
             data: CharacterData,
             effectsData: dict[EffectName: EffectData]
