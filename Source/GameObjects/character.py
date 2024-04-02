@@ -1,6 +1,6 @@
 import pygame
 
-from .effect import Effect
+from .Effects import Effect
 from Source.Utils import (
     CharacterData,
     EffectData

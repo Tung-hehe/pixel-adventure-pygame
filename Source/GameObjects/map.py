@@ -2,7 +2,7 @@ import pygame
 
 from .background import Background
 from .character import Character
-from .effect import Effect
+from .Effects import Effect
 from .fruit import Fruit
 from .layer import Layer
 from .tile import (
