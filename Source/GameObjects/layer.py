@@ -5,15 +5,11 @@ import pygame
 
 from .character import Character
 from .fruit import Fruit
-from .tile import (
-    StaticTile,
-    OneWayCollisionStaticTile
-)
+from .tile import *
 
-from Source.enums import (
+from Source.Enums import (
     EffectName,
     FruitName,
-    TilesetName,
 )
 from Source.Utils import (
     CharacterData,
@@ -27,9 +23,7 @@ class Layer:
 
     @classmethod
     def createStaticTileLayer(cls,
-            layer: dict,
-            tileset: dict[TilesetName, TilesetData],
-            mapData: dict
+            layer: dict, tileset: TilesetData, mapData: dict
         ) -> pygame.sprite.Group:
         staticTiles = pygame.sprite.Group()
         for rowIndex, row in enumerate(layer['data']):
@@ -39,21 +33,11 @@ class Layer:
                     colIndex * mapData['tileWidth'],
                     (rowIndex + 1) * mapData['tileHeight']
                 )
-                if eval(layer['class']) == StaticTile:
-                    tile = StaticTile(
-                        position=position,
-                        surface=tileset.surfaces[tileIndex],
-                        canCling=layer['canCling']
-                    )
-                elif eval(layer['class']) == OneWayCollisionStaticTile:
-                    tile = OneWayCollisionStaticTile(
-                        position=position,
-                        surface=tileset.surfaces[tileIndex],
-                        hitbox=layer['hitbox'],
-                        canCling=layer['canCling']
-                    )
-                else:
-                    raise ValueError(f"Unknown type of StaticTile: {eval(layer['class'])}")
+                tile = eval(layer['class'])(
+                    position=position,
+                    surface=tileset.surfaces[tileIndex],
+                    **layer["settings"]
+                )
                 staticTiles.add(tile)
         return staticTiles
 

@@ -9,12 +9,13 @@ import pygame
 from .map import Map
 from Source.Utils import (
     GameData,
-    Utils
+    Utils,
 )
 
-from Source.enums import (
+from Source.Enums import (
     BackgroundName,
-    CharacterName
+    CharacterName,
+    TilesetName,
 )
 
 
@@ -28,13 +29,33 @@ class Game:
         screenWidth = settings['screenWidth']
         screenHeight = settings['screenHeight']
         self.screen = pygame.display.set_mode((screenWidth,screenHeight))
+        self.clock = pygame.time.Clock()
+
         self.data = GameData(self.rootPath)
-        mapData = Utils.readJSONFile(self.rootPath/settings['startMapData'])
+        mapData = self.getMapData(self.rootPath/settings['startMapData'])
+        self.map = self.createMap(mapData)
+        return None
+
+    def getMapData(self, path: Path) -> dict:
+        mapData = Utils.readJSONFile(path)
         for idx, layer in enumerate(mapData['layers']):
             mapData['layers'][idx]['data'] = np.loadtxt(
                 self.rootPath/layer['path'], delimiter=',', dtype=int
             )
-        self.map = Map(
+        return mapData
+
+    def updateGameData(self, mapData: dict) -> None:
+        for tileset in mapData['tilesets']:
+            tilesetName = TilesetName[tileset]
+            if tilesetName not in self.data.tilesets:
+                self.data.tilesets[tilesetName] = self.data.getTilesetData(
+                    self.rootPath, tilesetName
+                )
+        return None
+
+    def createMap(self, mapData: dict) -> Map:
+        self.updateGameData(mapData)
+        map = Map(
             mapData=mapData,
             tilesetData=self.data.tilesets,
             playerData=self.data.characters[random.choice(list(CharacterName))],
@@ -42,7 +63,7 @@ class Game:
             fruitsData=self.data.fruits,
             effectData = self.data.effects,
         )
-        self.clock = pygame.time.Clock()
+        return map
 
     def run(self) -> None:
         while True:

@@ -5,7 +5,7 @@ from Source.Utils import (
     CharacterData,
     EffectData
 )
-from Source.enums import (
+from Source.Enums import (
     CharacterStatus,
     CharacterFacing,
     CharacterRelativePosition,

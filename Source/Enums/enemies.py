@@ -1,0 +1,26 @@
+from enum import Enum
+
+
+class EnemyName(Enum):
+    AngryPig = 'AngryPig'
+    Bat = 'Bat'
+    Bee = 'Bee'
+    BlueBird = 'BlueBird'
+    Bunny = 'Bunny'
+    Chameleon = 'Chameleon'
+    Chicken = 'Chicken'
+    Duck = 'Duck'
+    FatBird = 'FatBird'
+    Ghost = 'Ghost'
+    Mushroom = 'Mushroom'
+    Plant = 'Plant'
+    Radish = 'Radish'
+    Rino = 'Rino'
+    BigRock = 'BigRock'
+    MediumRock = 'MediumRock'
+    SmallRock = 'SmallRock'
+    Skull = 'Skull'
+    Slime = 'Slime'
+    Snail = 'Snail'
+    Trunk = 'Trunk'
+    Turtle = 'Turtle'

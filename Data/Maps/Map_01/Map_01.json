@@ -2,27 +2,33 @@
     "tileWidth": 16,
     "tileHeight": 16,
     "playerPosition": [100, 100],
-    "traps": [],
+    "tilesets": ["Terrain"],
     "enemies": [],
     "layers": [
         {
             "class": "StaticTile",
             "path": "Data/Maps/Map_01/Map_01_Terrain.csv",
             "tileset": "Terrain",
-            "canCling": false
+            "settings": {
+                "canCling": false
+            }
         },
         {
             "class": "StaticTile",
             "path": "Data/Maps/Map_01/Map_01_ClingTerrain.csv",
             "tileset": "Terrain",
-            "canCling": true
+            "settings": {
+                "canCling": true
+            }
         },
         {
             "class": "OneWayCollisionStaticTile",
             "path": "Data/Maps/Map_01/Map_01_Platform.csv",
             "tileset": "Terrain",
-            "hitbox": [32, 1],
-            "canCling": false
+            "settings": {
+                "hitbox": [32, 1],
+                "canCling": false
+            }
         },
         {
             "class": "Character",
