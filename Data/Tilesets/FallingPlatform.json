@@ -1,0 +1,16 @@
+{
+    "setting": {
+        "animationSpeed": 0.25,
+        "oscillation": 1,
+        "acceleration": 0.1,
+        "gravity": 0.9,
+        "duration": 1
+    },
+    "animations": {
+        "path": "Assets/Image/Tilesets/FallingPlatform",
+        "width": 64,
+        "height": 20,
+        "scale": 1,
+        "status": ["On", "Off"]
+    }
+}

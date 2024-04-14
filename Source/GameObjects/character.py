@@ -93,7 +93,45 @@ class Character(pygame.sprite.Sprite):
                 self.velocity.y = self.data.jumpSpeed
         return None
 
+    def addClingDustEffect(self) -> None:
+        if self.frameIndex in self.data.spawnClingWallDustFrames:
+            if self.facing == CharacterFacing.Left:
+                relativePosition = 'topleft'
+                rotation = -90
+            else:
+                relativePosition = 'topright'
+                rotation = 90
+            self.effects.add(Effect(
+                getattr(self.hitbox, relativePosition),
+                self.effectsData[EffectName.Run],
+                relativePosition=relativePosition,
+                rotation=rotation
+            ))
+        return None
+
+    def addRunDustEffect(self) -> None:
+        if self.frameIndex in self.data.spawnRunDustFrames:
+            if self.facing == CharacterFacing.Right:
+                relativePosition = 'bottomleft'
+            else:
+                relativePosition = 'bottomright'
+            self.effects.add(Effect(
+                getattr(self.hitbox, relativePosition),
+                self.effectsData[EffectName.Run],
+                relativePosition=relativePosition,
+            ))
+        return None
+
+    def addLandDustEffect(self) -> None:
+        self.effects.add(Effect(
+            self.rect.midbottom,
+            self.effectsData[EffectName.Land],
+        ))
+        return None
+
     def updateStatus(self) -> None:
+        if self.relativePosition != CharacterRelativePosition.OnObject:
+            self.followedObject = None
         if self.velocity.y < 0:
             if self.status != CharacterStatus.JumpOnAir:
                 self.status = CharacterStatus.Jump
@@ -102,46 +140,29 @@ class Character(pygame.sprite.Sprite):
                 self.status = CharacterStatus.Fall
             elif self.relativePosition == CharacterRelativePosition.OnWall:
                 self.status = CharacterStatus.ClingWall
-                if self.frameIndex in self.data.spawnClingWallDustFrames:
-                    if self.facing == CharacterFacing.Left:
-                        relativePosition = 'topleft'
-                        rotation = -90
-                    else:
-                        relativePosition = 'topright'
-                        rotation = 90
-                    self.effects.add(Effect(
-                        getattr(self.hitbox, relativePosition),
-                        self.effectsData[EffectName.Run],
-                        relativePosition=relativePosition,
-                        rotation=rotation
-                    ))
+                self.addClingDustEffect()
+            elif self.relativePosition == CharacterRelativePosition.OnObject:
+                if self.velocity.x != 0:
+                    if self.status == CharacterStatus.Fall:
+                        self.addLandDustEffect()
+                    self.status = CharacterStatus.Run
+                    self.addRunDustEffect()
+                else:
+                    if self.status == CharacterStatus.Fall:
+                        self.addLandDustEffect()
+                    self.status = CharacterStatus.Idle
         else:
             if self.velocity.x != 0:
                 if self.relativePosition == CharacterRelativePosition.OnGround:
                     if self.status == CharacterStatus.Fall:
-                        self.effects.add(Effect(
-                            self.rect.midbottom,
-                            self.effectsData[EffectName.Land],
-                        ))
+                        self.addLandDustEffect()
                     self.status = CharacterStatus.Run
-                    if self.frameIndex in self.data.spawnRunDustFrames:
-                        if self.facing == CharacterFacing.Right:
-                            relativePosition = 'bottomleft'
-                        else:
-                            relativePosition = 'bottomright'
-                        self.effects.add(Effect(
-                            getattr(self.hitbox, relativePosition),
-                            self.effectsData[EffectName.Run],
-                            relativePosition=relativePosition,
-                        ))
+                    self.addRunDustEffect()
                 elif self.relativePosition == CharacterRelativePosition.OnWall:
                     self.status = CharacterStatus.ClingWall
             else:
                 if self.status == CharacterStatus.Fall:
-                    self.effects.add(Effect(
-                        self.rect.midbottom,
-                        self.effectsData[EffectName.Land]
-                    ))
+                    self.addLandDustEffect()
                 self.status = CharacterStatus.Idle
         return None
 

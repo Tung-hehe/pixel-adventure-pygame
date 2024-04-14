@@ -52,7 +52,7 @@ class Map:
             layerClass = eval(layer["class"])
             if issubclass(layerClass, Tile):
                 tileset = tilesetData[TilesetName(layer['tileset'])]
-                self.tiles.add(Layer.createStaticTileLayer(layer, tileset, mapData))
+                self.tiles.add(Layer.createTileLayer(layer, tileset, mapData))
             elif layerClass == Character:
                 self.player = Layer.createPlayerLayer(layer, mapData, playerData, effectData)
             elif layerClass == Fruit:
@@ -118,6 +118,7 @@ class Map:
         self.handlePlayerMovementCollision()
         self.collectFruit()
         self.player.update()
+        self.tiles.update()
         self.fruits.update()
         self.collectFruitEffects.update()
         return None

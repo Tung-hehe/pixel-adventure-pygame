@@ -10,6 +10,7 @@ from Source.Enums import (
     EffectName,
     FruitName,
     TilesetName,
+    DynamicTileStatus
 )
 
 
@@ -65,8 +66,22 @@ class TilesetData:
 
     def __init__(self, rootPath: Path, tilesetName: TilesetName) -> None:
         dataDict = Utils.readJSONFile(rootPath/f'Data/Tilesets/{tilesetName.value}.json')
-        dataDict['path'] = rootPath / dataDict['path']
-        self.surfaces = Utils.getSurfaceListFromTileset(**dataDict)
+        if 'surface' in dataDict.keys():
+            dataDict['surface']['path'] = rootPath / dataDict['surface']['path']
+            self.surfaces = Utils.getSurfaceListFromTileset(**dataDict['surface'])
+        if 'animations' in dataDict.keys():
+            dataDict['animations']['path'] = rootPath / dataDict['animations']['path']
+            self.animations = {}
+            for status in dataDict['animations']['status']:
+                self.animations[DynamicTileStatus[status]] = Utils.getSurfaceListFromSpritesheets(
+                    path=dataDict['animations']['path'] / f"{status}.png",
+                    width=dataDict['animations']['width'],
+                    height=dataDict['animations']['height'],
+                    scale=dataDict['animations']['scale']
+                )
+        if "setting" in dataDict.keys():
+            for k, v in dataDict["setting"].items():
+                setattr(self, k, v)
         return None
 
 

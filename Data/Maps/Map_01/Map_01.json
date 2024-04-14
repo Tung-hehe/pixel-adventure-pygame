@@ -2,7 +2,7 @@
     "tileWidth": 16,
     "tileHeight": 16,
     "playerPosition": [100, 100],
-    "tilesets": ["Terrain"],
+    "tilesets": ["Terrain", "FallingPlatform"],
     "enemies": [],
     "layers": [
         {
@@ -28,6 +28,14 @@
             "settings": {
                 "hitbox": [32, 1],
                 "canCling": false
+            }
+        },
+        {
+            "class": "FallingPlatform",
+            "path": "Data/Maps/Map_01/Map_01_FallingPlatform.csv",
+            "tileset": "FallingPlatform",
+            "settings": {
+                "status": "On"
             }
         },
         {

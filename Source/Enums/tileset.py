@@ -6,3 +6,8 @@ class TilesetName(Enum):
     Platform = "Platform"
     SandMudIce = 'SandMudIce'
     Terrain = 'Terrain'
+
+
+class DynamicTileStatus(Enum):
+    On = "On"
+    Off = "Off"

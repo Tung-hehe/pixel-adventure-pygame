@@ -27,3 +27,4 @@ class CharacterRelativePosition(Enum):
     OnGround = 'OnGround'
     OnAir = 'OnAir'
     OnWall = 'OnWall'
+    OnObject = 'OnObject'

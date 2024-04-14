@@ -22,10 +22,10 @@ from Source.Utils import (
 class Layer:
 
     @classmethod
-    def createStaticTileLayer(cls,
+    def createTileLayer(cls,
             layer: dict, tileset: TilesetData, mapData: dict
         ) -> pygame.sprite.Group:
-        staticTiles = pygame.sprite.Group()
+        tiles = pygame.sprite.Group()
         for rowIndex, row in enumerate(layer['data']):
             for colIndex, tileIndex in enumerate(row):
                 if tileIndex == -1: continue
@@ -33,13 +33,23 @@ class Layer:
                     colIndex * mapData['tileWidth'],
                     (rowIndex + 1) * mapData['tileHeight']
                 )
-                tile = eval(layer['class'])(
-                    position=position,
-                    surface=tileset.surfaces[tileIndex],
-                    **layer["settings"]
-                )
-                staticTiles.add(tile)
-        return staticTiles
+                TileClass = eval(layer['class'])
+                tile = None
+                if issubclass(TileClass, StaticTile):
+                    tile = TileClass(
+                        position=position,
+                        surface=tileset.surfaces[tileIndex],
+                        **layer["settings"]
+                    )
+                elif issubclass(TileClass, DynamicTile):
+                    tile = TileClass(
+                        position=position,
+                        tilesetData=tileset,
+                        **layer["settings"]
+                    )
+                if tile is not None:
+                    tiles.add(tile)
+        return tiles
 
     @classmethod
     def createPlayerLayer(cls,
