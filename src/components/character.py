@@ -15,15 +15,15 @@ from ..utils import Utils
 class Character(Sprite):
 
     # Constants
-    animation_speed = 25
+    animation_speed = 20
     max_velocity = 300
     accerleration = 30
-    jump_velocity = 400
+    jump_velocity = 500
     air_jump_velocity = 400
-    wall_jump_velocity = pygame.Vector2(600, 300)
+    wall_jump_velocity = pygame.Vector2(400, 200)
     wall_jump_accerleration = 3
     max_consecutive_jump = 2
-    gravity = 800
+    gravity = 1000
     wall_friction = 900
     image_size = (64, 64)
     hitbox_size = (36, 50)
@@ -186,9 +186,9 @@ class Character(Sprite):
             else:
                 if self.contact_checker[Direction.Right] ^ self.contact_checker[Direction.Left]:
                     self.status = CharacterStatus.WallSlide
-                    self.jump_counter = 0
                     if self.contact_checker[Direction.Right]: self.facing = Direction.Left
                     else: self.facing = Direction.Right
+                    self.jump_counter = 0
                 else:
                     self.status = CharacterStatus.Fall
         return None
