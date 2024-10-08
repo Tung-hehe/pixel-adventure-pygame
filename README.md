@@ -7,12 +7,12 @@ This is a 2D platform game made with Pygame
 First, you need to download the repository. You can either run the script below on the command-line or terminal:
 
 ```console
-git clone https://github.com/thanhtung1005/Pixel-Adventure-Pygame
+git clone https://github.com/thanhtung1005/pixel-adventure-pygame
 ```
 
 ## **Change directory to project's directory**
 ```console
-cd path/to/ExaminationTimeTabling
+cd path/to/pixel-adventure-pygame
 ```
 
 ## **Create python virtual environment:**

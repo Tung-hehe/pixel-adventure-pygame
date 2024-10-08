@@ -14,7 +14,6 @@ class PythonPath():
         sys.path.remove(self.path)
 
 with PythonPath(Path(__file__).absolute().parents[1]):
-    from Source.GameObjects import Game
-
+    from src import Game
     game = Game()
     game.run()
