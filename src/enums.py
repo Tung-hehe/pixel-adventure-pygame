@@ -41,7 +41,12 @@ class Direction(Enum):
     Top = auto()
     Bottom = auto()
 
-class Fruit(Enum):
+class EffectName(Enum):
+    Appearing = 'appearing'
+    Collected = 'collected'
+    Desappearing = 'desappearing'
+
+class FruitName(Enum):
     Apple = 'apple'
     Bananas = 'bananas'
     Cherries = 'cherries'

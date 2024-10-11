@@ -2,14 +2,13 @@ import pygame
 
 from .character import Character
 
-from .sprite import Sprite
 from ..enums import (
     Axis,
     Direction,
 )
 
 
-class Tile(Sprite):
+class Tile(pygame.sprite.Sprite):
 
     def __init__(self,
             position: tuple[float, float],

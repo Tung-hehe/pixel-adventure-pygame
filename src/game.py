@@ -29,22 +29,12 @@ class Game:
         self.screen = pygame.display.set_mode(self.screen_size)
         pygame.display.set_caption(self.game_name)
         self.clock = pygame.time.Clock()
-        character_name = random.choice(list(CharacterName))
-        character_images = Character.read_images(
-            self.root_path / f'assets/images/characters/{character_name.value}'
-        )
+        character_images = Character.load_images(self.root_path, random.choice(list(CharacterName)))
+        background_image = Background.load_images(self.root_path, random.choice(list(BackgroundName)))
         player = Character(character_images)
-        character_name = random.choice(list(CharacterName))
-        character_images = Character.read_images(
-            self.root_path / f'assets/images/characters/{character_name.value}'
-        )
-        background_name = random.choice(list(BackgroundName))
-        background_image = Background.read_image(
-            self.root_path / f'assets/images/backgrounds/{background_name.value}.png'
-        )
         background = Background(background_image)
-        self.map = Map()
-        self.map.setup(self.root_path / self.start_map, player, background)
+        self.map = Map(self.root_path)
+        self.map.setup(self.start_map, player, background)
         return None
 
     def change_map(self) -> None:

@@ -2,10 +2,10 @@ from pathlib import Path
 
 import pygame
 
-from .sprite import Sprite
+from ..enums import BackgroundName
 
 
-class Background(Sprite):
+class Background(pygame.sprite.Sprite):
 
     image_size = (128, 128)
     scroll_speed = 1
@@ -16,8 +16,10 @@ class Background(Sprite):
         return None
 
     @classmethod
-    def read_image(cls, path: Path) -> pygame.Surface:
-        image = pygame.image.load(path).convert_alpha()
+    def load_images(cls, root_path: Path, background_name: BackgroundName) -> pygame.Surface:
+        image = pygame.image.load(
+            root_path / f'assets/images/backgrounds/{background_name.value}.png'
+        ).convert_alpha()
         image = pygame.transform.scale(image, cls.image_size)
         return image
 

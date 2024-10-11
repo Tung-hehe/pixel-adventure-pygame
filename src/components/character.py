@@ -2,17 +2,17 @@ from pathlib import Path
 
 import pygame
 
-from .sprite import Sprite
 from ..enums import (
     Axis,
     Direction,
+    CharacterName,
     CharacterStatus,
     Direction,
 )
 from ..utils import Utils
 
 
-class Character(Sprite):
+class Character(pygame.sprite.Sprite):
 
     # Constants
     animation_speed = 20
@@ -61,11 +61,14 @@ class Character(Sprite):
         return None
 
     @classmethod
-    def read_images(cls, path: Path) -> dict[CharacterStatus: dict[Direction, list[pygame.Surface]]]:
+    def load_images(cls,
+            rooth_path: Path,  character_name: CharacterName
+        ) -> dict[CharacterStatus: dict[Direction, list[pygame.Surface]]]:
         images = {
             status: {facing: [] for facing in Direction}
             for status in CharacterStatus
         }
+        path = rooth_path/ f'assets/images/characters/{character_name.value}'
         for status in images.keys():
             status_path = path / f'{status.value}.png'
             images[status][Direction.Right] = Utils.read_spritesheet(
@@ -199,11 +202,12 @@ class Character(Sprite):
         self.image = self.images[self.status][self.facing][frame_index]
         return None
 
-    def update(self) -> None:
+    def update(self, dt: float) -> None:
         self.update_collision_direction_checker_rect()
         self.rect.midbottom = self.hitbox.midbottom
         self.tracking_rect.midbottom = self.hitbox.midbottom
         self.update_status()
+        self.update_image(dt)
         return None
 
     def is_collision(self, object_rect: pygame.FRect, direction: Direction) -> bool:
@@ -217,3 +221,7 @@ class Character(Sprite):
             return self.hitbox.bottom >= object_rect.top and self.tracking_rect.bottom <= object_rect.top
         else:
             raise ValueError(f'Invalid dicrection {direction}')
+
+    def draw(self, surface: pygame.Surface) -> None:
+        surface.blit(self.image, self.rect.topleft)
+        return None
