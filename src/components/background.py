@@ -8,7 +8,7 @@ from ..enums import BackgroundName
 class Background(pygame.sprite.Sprite):
 
     image_size = (128, 128)
-    scroll_speed = 1
+    scroll_speed = 0.25
 
     def __init__(self, image: pygame.Surface) -> None:
         self.image = image

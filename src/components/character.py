@@ -16,9 +16,9 @@ class Character(pygame.sprite.Sprite):
 
     # Constants
     animation_speed = 20
-    max_velocity = 300
-    accerleration = 30
-    jump_velocity = 500
+    max_velocity = 250
+    accerleration = 3
+    jump_velocity = 375
     air_jump_velocity = 400
     wall_jump_velocity = pygame.Vector2(400, 200)
     wall_jump_accerleration = 3
@@ -62,13 +62,13 @@ class Character(pygame.sprite.Sprite):
 
     @classmethod
     def load_images(cls,
-            rooth_path: Path,  character_name: CharacterName
+            root_path: Path,  character_name: CharacterName
         ) -> dict[CharacterStatus: dict[Direction, list[pygame.Surface]]]:
         images = {
             status: {facing: [] for facing in Direction}
             for status in CharacterStatus
         }
-        path = rooth_path/ f'assets/images/characters/{character_name.value}'
+        path = root_path/ f'assets/images/characters/{character_name.value}'
         for status in images.keys():
             status_path = path / f'{status.value}.png'
             images[status][Direction.Right] = Utils.read_spritesheet(
@@ -200,6 +200,8 @@ class Character(pygame.sprite.Sprite):
         self.frame += self.animation_speed * dt
         frame_index = int(self.frame) % len(self.images[self.status][self.facing])
         self.image = self.images[self.status][self.facing][frame_index]
+        if self.frame >= len(self.images[self.status][self.facing]):
+            self.frame = 0
         return None
 
     def update(self, dt: float) -> None:

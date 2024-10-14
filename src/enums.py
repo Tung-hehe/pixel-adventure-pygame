@@ -44,7 +44,7 @@ class Direction(Enum):
 class EffectName(Enum):
     Appearing = 'appearing'
     Collected = 'collected'
-    Desappearing = 'desappearing'
+    Disappearing = 'disappearing'
 
 class FruitName(Enum):
     Apple = 'apple'
@@ -55,3 +55,13 @@ class FruitName(Enum):
     Orange = 'orange'
     Pineapple = 'pineapple'
     Strawberry = 'strawberry'
+
+class ParticleName(Enum):
+    Dust = 'dust'
+    Ice = 'ice'
+    Mud = 'mud'
+    Sand = 'sand'
+
+class PlatformStatus(Enum):
+    On = 'on'
+    Off = 'off'
