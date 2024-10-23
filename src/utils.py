@@ -33,3 +33,21 @@ class Utils:
                 surface = pygame.transform.scale(surface, (width * scale, height * scale))
             surfaceList.append(surface)
         return surfaceList
+
+
+class Comparison:
+
+    @classmethod
+    def equal(cls, lhs: float|int, rhs: float|int, *, epsilon: float = 1e-3) -> bool:
+        """Is lhs equal to rhs? """
+        return -epsilon <= lhs - rhs <= epsilon
+
+    @classmethod
+    def greaterThanOrEqualTo(cls, lhs: float|int, rhs: float|int, *, epsilon: float = 1e-3) -> bool:
+        """Is lhs greater than or equal to rhs? """
+        return lhs >= rhs - epsilon
+
+    @classmethod
+    def lessThanOrEqualTo(cls, lhs: float|int, rhs: float|int, *, epsilon: float = 1e-3) -> bool:
+        """Is lhs less than or equal to rhs? """
+        return lhs <= rhs + epsilon

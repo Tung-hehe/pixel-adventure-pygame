@@ -31,7 +31,7 @@ class Map:
     def __init__(self, root_path: Path) -> None:
         self.root_path = root_path
         self.static_tiles = pygame.sprite.Group()
-        self.dynamic_tiles = pygame.sprite.Group()
+        self.moving_tiles = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
         self.player = None
         self.background = None
@@ -89,7 +89,7 @@ class Map:
         if layer.name not in self.objects_images:
             self.objects_images[layer.name] = FallingPlatform.load_images(self.root_path)
         for position in layer:
-            self.dynamic_tiles.add(FallingPlatform(
+            self.moving_tiles.add(FallingPlatform(
                 (position.x, position.y), self.objects_images[layer.name], 'topleft')
             )
         return None
@@ -117,7 +117,7 @@ class Map:
         return None
 
     def handle_player_tile_collision(self, axis: Axis) -> None:
-        for tile in self.static_tiles.sprites() + self.dynamic_tiles.sprites():
+        for tile in self.static_tiles.sprites() + self.moving_tiles.sprites():
             if not tile.rect.colliderect(self.player.hitbox):
                 continue
             tile.handle_player_collision(self.player, axis)
@@ -133,7 +133,7 @@ class Map:
         for direction in Direction:
             if direction != Direction.Top:
                 self.player.contact_checker[direction] = False
-        for tile in self.static_tiles.sprites() + self.dynamic_tiles.sprites():
+        for tile in self.static_tiles.sprites() + self.moving_tiles.sprites():
             for direction in Direction:
                 if direction == Direction.Top:
                     continue
@@ -146,6 +146,8 @@ class Map:
         return None
 
     def update(self, dt: float) -> None:
+        for tile in self.moving_tiles.sprites():
+            tile.move(dt)
         self.player.move(dt, Axis.Horizontal)
         self.handle_player_tile_collision(Axis.Horizontal)
         self.player.move(dt, Axis.Vertical)
@@ -153,7 +155,7 @@ class Map:
         self.handle_player_contact()
         self.handle_player_item_collision()
         self.background.update(dt)
-        self.dynamic_tiles.update(dt)
+        self.moving_tiles.update(dt)
         self.player.update(dt)
         self.items.update(dt)
         return None
@@ -161,7 +163,7 @@ class Map:
     def draw(self, screen: pygame.Surface) -> None:
         self.background.draw(screen)
         self.static_tiles.draw(screen)
-        self.dynamic_tiles.draw(screen)
+        self.moving_tiles.draw(screen)
         self.player.draw(screen)
         self.items.draw(screen)
         return None

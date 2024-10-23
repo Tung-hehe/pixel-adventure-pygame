@@ -9,7 +9,10 @@ from ..enums import (
     CharacterStatus,
     Direction,
 )
-from ..utils import Utils
+from ..utils import (
+    Comparison,
+    Utils
+)
 
 
 class Character(pygame.sprite.Sprite):
@@ -146,14 +149,14 @@ class Character(pygame.sprite.Sprite):
         return None
 
     def vertical_move(self, dt: float) -> None:
-        if self.status != CharacterStatus.WallSlide:
-            self.velocity.y += self.gravity / 2 * dt
+        if self.status == CharacterStatus.WallSlide:
+            self.velocity.y += (self.gravity - self.wall_friction) / 2 * dt
             self.hitbox.y += self.velocity.y * dt
-            self.velocity.y += self.gravity / 2 * dt
+            self.velocity.y += (self.gravity - self.wall_friction) / 2 * dt
         else:
-            self.velocity.y += (self.gravity - self.wall_friction) / 2 * dt
+            self.velocity.y += self.gravity / 2 * dt
             self.hitbox.y += self.velocity.y * dt
-            self.velocity.y += (self.gravity - self.wall_friction) / 2 * dt
+            self.velocity.y += self.gravity / 2 * dt
         return None
 
     def move(self, dt: float, axis: Axis) -> None:
@@ -212,17 +215,39 @@ class Character(pygame.sprite.Sprite):
         self.update_image(dt)
         return None
 
-    def is_collision(self, object_rect: pygame.FRect, direction: Direction) -> bool:
+    def is_collision_with_static_object(self, object_rect: pygame.FRect, direction: Direction) -> bool:
         if direction == Direction.Right:
-            return self.hitbox.right >= object_rect.left and self.tracking_rect.right <= object_rect.left
+            current = Comparison.greaterThanOrEqualTo(self.hitbox.right, object_rect.left)
+            tracking = Comparison.lessThanOrEqualTo(self.tracking_rect.right, object_rect.left)
         elif direction == Direction.Left:
-            return self.hitbox.left <= object_rect.right and self.tracking_rect.left >= object_rect.right
+            current = Comparison.lessThanOrEqualTo(self.hitbox.left, object_rect.right)
+            tracking = Comparison.greaterThanOrEqualTo(self.tracking_rect.left, object_rect.right)
         elif direction == Direction.Top:
-            return self.hitbox.top <= object_rect.bottom and self.tracking_rect.top >= object_rect.bottom
+            current = Comparison.lessThanOrEqualTo(self.hitbox.top, object_rect.bottom)
+            tracking = Comparison.greaterThanOrEqualTo(self.tracking_rect.top, object_rect.bottom)
         elif direction == Direction.Bottom:
-            return self.hitbox.bottom >= object_rect.top and self.tracking_rect.bottom <= object_rect.top
+            current = Comparison.greaterThanOrEqualTo(self.hitbox.bottom, object_rect.top)
+            tracking = Comparison.lessThanOrEqualTo(self.tracking_rect.bottom, object_rect.top)
         else:
             raise ValueError(f'Invalid dicrection {direction}')
+        return current and tracking
+
+    def is_collision_with_moving_object(self, object_rect: pygame.FRect, tracking_rect: pygame.FRect, direction: Direction) -> bool:
+        if direction == Direction.Right:
+            current = Comparison.greaterThanOrEqualTo(self.hitbox.right, object_rect.left)
+            tracking = Comparison.lessThanOrEqualTo(self.tracking_rect.right, tracking_rect.left)
+        elif direction == Direction.Left:
+            current = Comparison.lessThanOrEqualTo(self.hitbox.left, object_rect.right)
+            tracking = Comparison.greaterThanOrEqualTo(self.tracking_rect.left, tracking_rect.right)
+        elif direction == Direction.Top:
+            current = Comparison.lessThanOrEqualTo(self.hitbox.top, object_rect.bottom)
+            tracking = Comparison.greaterThanOrEqualTo(self.tracking_rect.top, tracking_rect.bottom)
+        elif direction == Direction.Bottom:
+            current = Comparison.greaterThanOrEqualTo(self.hitbox.bottom, object_rect.top)
+            tracking = Comparison.lessThanOrEqualTo(self.tracking_rect.bottom, tracking_rect.top)
+        else:
+            raise ValueError(f'Invalid dicrection {direction}')
+        return current and tracking
 
     def draw(self, surface: pygame.Surface) -> None:
         surface.blit(self.image, self.rect.topleft)

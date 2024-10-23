@@ -44,15 +44,15 @@ class Terrain(Tile):
 
     def handle_player_collision(self, player: Character, axis: Axis) -> None:
         if axis == Axis.Horizontal:
-            if player.is_collision(self.rect, Direction.Right):
+            if player.is_collision_with_static_object(self.rect, Direction.Right):
                 player.hitbox.right = self.rect.left
-            elif player.is_collision(self.rect, Direction.Left):
+            elif player.is_collision_with_static_object(self.rect, Direction.Left):
                 player.hitbox.left = self.rect.right
         elif axis == Axis.Vertical:
-            if player.is_collision(self.rect, Direction.Bottom):
+            if player.is_collision_with_static_object(self.rect, Direction.Bottom):
                 player.hitbox.bottom = self.rect.top
                 player.jump_counter = 0
-            elif player.is_collision(self.rect, Direction.Top):
+            elif player.is_collision_with_static_object(self.rect, Direction.Top):
                 player.hitbox.top = self.rect.bottom
             player.velocity.y = 0
         else:
@@ -85,7 +85,7 @@ class Platform(Tile):
         if axis == Axis.Horizontal:
             """Platform only supports semi-collision"""
         elif axis == Axis.Vertical:
-            if player.is_collision(self.rect, Direction.Bottom):
+            if player.is_collision_with_static_object(self.rect, Direction.Bottom):
                 player.hitbox.bottom = self.rect.top
                 player.jump_counter = 0
                 player.velocity.y = 0
@@ -104,6 +104,8 @@ class FallingPlatform(Platform):
 
     animation_speed = 10
     image_size = (64, 20)
+    accelerator = 0.2
+    max_velocity = 30
     def __init__(self,
             position: tuple[float, float],
             images: list[pygame.Surface],
@@ -115,6 +117,9 @@ class FallingPlatform(Platform):
         surface = self.images[self.status][0]
         super().__init__(position, surface, rect_orientation)
         self.dust = pygame.sprite.Group()
+        self.velocity = pygame.Vector2()
+        self.direction = 1
+        self.tracking_rect = self.rect.copy()
         return None
 
     @classmethod
@@ -129,7 +134,35 @@ class FallingPlatform(Platform):
         }
         return images
 
-    def update(self, dt):
+    def handle_player_collision(self, player: Character, axis: Axis) -> None:
+        if player.skip_platform:
+            return None
+        if axis == Axis.Horizontal:
+            """Platform only supports semi-collision"""
+        elif axis == Axis.Vertical:
+            if player.is_collision_with_moving_object(self.rect, self.tracking_rect, Direction.Bottom):
+                player.hitbox.bottom = self.rect.top
+                player.jump_counter = 0
+                player.velocity.y = 0
+        else:
+            raise ValueError(f'Invalid axis {axis}')
+        return None
+
+    def check_player_contact(self, player: Character, direction: Direction) -> bool:
+        assert direction != Direction.Top
+        if direction == Direction.Bottom:
+            return self.rect.colliderect(player.contact_rect[direction])
+        return False
+
+    def move(self, dt) -> None:
+        self.velocity.y += self.direction * self.accelerator
+        if abs(self.velocity.y) >= self.max_velocity:
+            self.direction *= -1
+        self.rect.y += self.velocity.y * dt
+        return None
+
+    def update(self, dt) -> None:
+        self.tracking_rect.midbottom = self.rect.midbottom
         self.frame += self.animation_speed * dt
         frame_index = int(self.frame) % len(self.images)
         self.image = self.images[self.status][frame_index]
