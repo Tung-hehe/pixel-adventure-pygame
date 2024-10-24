@@ -51,6 +51,7 @@ class Character(pygame.sprite.Sprite):
             Direction.Bottom: pygame.FRect((0, 0), (self.hitbox.width, 1)),
         }
         self.contact_checker = {direction: False for direction in self.contact_rect.keys()}
+        self.following_object = None
 
         # Movement
         self.velocity = pygame.Vector2()
@@ -146,6 +147,8 @@ class Character(pygame.sprite.Sprite):
                 if self.velocity.x >= 0:
                     self.wall_jumping = False
         self.hitbox.x += self.velocity.x * dt
+        if self.following_object:
+            self.hitbox.x += self.following_object.velocity.x * dt
         return None
 
     def vertical_move(self, dt: float) -> None:
@@ -157,6 +160,8 @@ class Character(pygame.sprite.Sprite):
             self.velocity.y += self.gravity / 2 * dt
             self.hitbox.y += self.velocity.y * dt
             self.velocity.y += self.gravity / 2 * dt
+        if self.following_object:
+            self.hitbox.x += self.following_object.velocity.x * dt
         return None
 
     def move(self, dt: float, axis: Axis) -> None:

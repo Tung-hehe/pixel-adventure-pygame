@@ -90,8 +90,11 @@ class Map:
             self.objects_images[layer.name] = FallingPlatform.load_images(self.root_path)
         for position in layer:
             self.moving_tiles.add(FallingPlatform(
-                (position.x, position.y), self.objects_images[layer.name], 'topleft')
-            )
+                (position.x, position.y),
+                self.objects_images[layer.name],
+                'topleft',
+                self.objects_images['particle'][ParticleName.Dust]
+            ))
         return None
 
     def set_up_player(self, layer: pytmx.pytmx.TiledGroupLayer, player: Character) -> None:
@@ -133,6 +136,7 @@ class Map:
         for direction in Direction:
             if direction != Direction.Top:
                 self.player.contact_checker[direction] = False
+        self.following_object = None
         for tile in self.static_tiles.sprites() + self.moving_tiles.sprites():
             for direction in Direction:
                 if direction == Direction.Top:
@@ -164,6 +168,8 @@ class Map:
         self.background.draw(screen)
         self.static_tiles.draw(screen)
         self.moving_tiles.draw(screen)
+        for tile in self.moving_tiles.sprites():
+            tile.dust.draw(screen)
         self.player.draw(screen)
         self.items.draw(screen)
         return None

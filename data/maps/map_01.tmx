@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="32" height="18" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="22">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="32" height="18" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="28">
  <tileset firstgid="1" source="../tilesets/terrain.tsx"/>
  <tileset firstgid="243" source="../tilesets/character.tsx"/>
  <tileset firstgid="244" source="../tilesets/fruit.tsx"/>
@@ -16,19 +16,19 @@
   <object id="5" gid="244" x="416" y="544" width="64" height="64"/>
   <object id="6" gid="244" x="351.909" y="544.03" width="64" height="64"/>
   <object id="7" gid="244" x="384" y="502.091" width="64" height="64"/>
-  <object id="13" gid="244" x="608" y="256" width="64" height="64"/>
-  <object id="14" gid="244" x="448" y="224" width="64" height="64"/>
-  <object id="15" gid="244" x="288" y="256" width="64" height="64"/>
-  <object id="16" gid="244" x="128" y="224" width="64" height="64"/>
+  <object id="13" gid="244" x="576.053" y="159.605" width="64" height="64"/>
+  <object id="14" gid="244" x="384" y="192.667" width="64" height="64"/>
+  <object id="15" gid="244" x="192" y="159.333" width="64" height="64"/>
+  <object id="26" gid="244" x="479.333" y="224" width="64" height="64"/>
+  <object id="27" gid="244" x="288.667" y="224.667" width="64" height="64"/>
  </objectgroup>
  <objectgroup id="6" name="chekpoint">
   <object id="17" gid="262" x="928" y="224" width="64" height="64"/>
  </objectgroup>
  <objectgroup id="5" name="falling_platform">
-  <object id="8" gid="261" x="608" y="276" width="64" height="20"/>
-  <object id="9" gid="261" x="448" y="244" width="64" height="20"/>
-  <object id="10" gid="261" x="288" y="276" width="64" height="20"/>
-  <object id="11" gid="261" x="128" y="244" width="64" height="20"/>
+  <object id="8" gid="261" x="576.125" y="179.75" width="64" height="20"/>
+  <object id="9" gid="261" x="384" y="212" width="64" height="20"/>
+  <object id="10" gid="261" x="192.667" y="181.333" width="64" height="20"/>
  </objectgroup>
  <layer id="2" name="static_platform" width="32" height="18">
   <data encoding="csv">

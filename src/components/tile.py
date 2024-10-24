@@ -1,13 +1,17 @@
+import random
+
 from pathlib import Path
 
 import pygame
 
 from .character import Character
+from .effect import Particle
+from .timer import Timer
 
 from ..enums import (
     Axis,
     Direction,
-    PlatformStatus
+    PlatformStatus,
 )
 from ..utils import Utils
 
@@ -106,12 +110,21 @@ class FallingPlatform(Platform):
     image_size = (64, 20)
     accelerator = 0.2
     max_velocity = 30
+    particle_spawn_timer = 200
+    particle_velocity_range = (0.35, 0.45)
+    particle_spawn_range = 20
+    particle_velocity_range = [0.3, 0.5]
+    particle_exist_timer = 400
+    particle_scale_range = [1, 1.3]
+    particle_alpha_range = [50, 100]
     def __init__(self,
             position: tuple[float, float],
             images: list[pygame.Surface],
-            rect_orientation: str
+            rect_orientation: str,
+            particle_image: pygame.Surface
         ):
         self.images = images
+        self.particle_image = particle_image
         self.frame = 0
         self.status = PlatformStatus.On
         surface = self.images[self.status][0]
@@ -119,6 +132,8 @@ class FallingPlatform(Platform):
         self.dust = pygame.sprite.Group()
         self.velocity = pygame.Vector2()
         self.direction = 1
+        self.particle_spawn_timer = Timer(self.particle_spawn_timer, self.spawn_dust_particle, True)
+        self.particle_spawn_timer.activate()
         self.tracking_rect = self.rect.copy()
         return None
 
@@ -151,6 +166,8 @@ class FallingPlatform(Platform):
     def check_player_contact(self, player: Character, direction: Direction) -> bool:
         assert direction != Direction.Top
         if direction == Direction.Bottom:
+            if self.rect.colliderect(player.contact_rect[direction]):
+                player.following_object = self
             return self.rect.colliderect(player.contact_rect[direction])
         return False
 
@@ -161,9 +178,25 @@ class FallingPlatform(Platform):
         self.rect.y += self.velocity.y * dt
         return None
 
+    def spawn_dust_particle(self) -> None:
+        position = self.rect.center[0] + random.uniform(-self.particle_spawn_range, self.particle_spawn_range)
+        velocity = random.uniform(self.particle_velocity_range[0], self.particle_velocity_range[1])
+        particle = Particle(
+            surface=self.particle_image,
+            position=(position, self.rect.bottom),
+            veltocity=pygame.Vector2(0, velocity),
+            timer=self.particle_exist_timer,
+            scale=random.uniform(self.particle_scale_range[0], self.particle_scale_range[1]),
+            alpha=random.randint(self.particle_alpha_range[0], self.particle_alpha_range[1])
+        )
+        self.dust.add(particle)
+        return None
+
     def update(self, dt) -> None:
         self.tracking_rect.midbottom = self.rect.midbottom
         self.frame += self.animation_speed * dt
         frame_index = int(self.frame) % len(self.images)
         self.image = self.images[self.status][frame_index]
+        self.particle_spawn_timer.update()
+        self.dust.update()
         return None
