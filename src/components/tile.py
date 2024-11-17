@@ -213,7 +213,8 @@ class FallingPlatform(Platform):
         self.frame += self.animation_speed * dt
         frame_index = int(self.frame) % len(self.images[self.status])
         self.image = self.images[self.status][frame_index]
-        self.particle_spawn_timer.update()
+        if self.status == PlatformStatus.On:
+            self.particle_spawn_timer.update()
         self.turn_off_timer.update()
         self.dust.update()
         if self.rect.top >= self.limit:
