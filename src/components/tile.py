@@ -111,6 +111,8 @@ class FallingPlatform(Platform):
     accelerator = 0.2
     max_velocity = 30
     particle_spawn_timer = 200
+    turn_off_timer = 300
+    gravity = 1200
     particle_velocity_range = (0.35, 0.45)
     particle_spawn_range = 20
     particle_velocity_range = [0.3, 0.5]
@@ -133,8 +135,15 @@ class FallingPlatform(Platform):
         self.velocity = pygame.Vector2()
         self.direction = 1
         self.particle_spawn_timer = Timer(self.particle_spawn_timer, self.spawn_dust_particle, True)
+        self.turn_off_timer = Timer(self.turn_off_timer, self.turn_off, False)
         self.particle_spawn_timer.activate()
         self.tracking_rect = self.rect.copy()
+        self.limit = pygame.display.get_window_size()[1]
+        return None
+
+    def turn_off(self) -> None:
+        self.frame = 0
+        self.status = PlatformStatus.Off
         return None
 
     @classmethod
@@ -159,6 +168,8 @@ class FallingPlatform(Platform):
                 player.hitbox.bottom = self.rect.top
                 player.jump_counter = 0
                 player.velocity.y = 0
+                if self.status == PlatformStatus.On and not self.turn_off_timer.active:
+                    self.turn_off_timer.activate()
         else:
             raise ValueError(f'Invalid axis {axis}')
         return None
@@ -172,10 +183,15 @@ class FallingPlatform(Platform):
         return False
 
     def move(self, dt) -> None:
-        self.velocity.y += self.direction * self.accelerator
-        if abs(self.velocity.y) >= self.max_velocity:
-            self.direction *= -1
-        self.rect.y += self.velocity.y * dt
+        if self.status == PlatformStatus.On:
+            self.velocity.y += self.direction * self.accelerator
+            if abs(self.velocity.y) >= self.max_velocity:
+                self.direction *= -1
+            self.rect.y += self.velocity.y * dt
+        else:
+            self.velocity.y += self.gravity / 2 * dt
+            self.rect.y += self.velocity.y * dt
+            self.velocity.y += self.gravity / 2 * dt
         return None
 
     def spawn_dust_particle(self) -> None:
@@ -195,8 +211,11 @@ class FallingPlatform(Platform):
     def update(self, dt) -> None:
         self.tracking_rect.midbottom = self.rect.midbottom
         self.frame += self.animation_speed * dt
-        frame_index = int(self.frame) % len(self.images)
+        frame_index = int(self.frame) % len(self.images[self.status])
         self.image = self.images[self.status][frame_index]
         self.particle_spawn_timer.update()
+        self.turn_off_timer.update()
         self.dust.update()
+        if self.rect.top >= self.limit:
+            self.kill()
         return None
