@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="32" height="18" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="28">
- <tileset firstgid="1" source="../tilesets/terrain.tsx"/>
- <tileset firstgid="243" source="../tilesets/character.tsx"/>
- <tileset firstgid="244" source="../tilesets/fruit.tsx"/>
- <tileset firstgid="261" source="../tilesets/falling_platform.tsx"/>
- <tileset firstgid="262" source="../tilesets/checkpoint.tsx"/>
- <tileset firstgid="263" source="../tilesets/static_platform.tsx"/>
+ <tileset firstgid="1" source="../objects/terrain.tsx"/>
+ <tileset firstgid="243" source="../objects/character.tsx"/>
+ <tileset firstgid="244" source="../objects/fruit.tsx"/>
+ <tileset firstgid="261" source="../objects/falling_platform.tsx"/>
+ <tileset firstgid="262" source="../objects/checkpoint.tsx"/>
+ <tileset firstgid="263" source="../objects/static_platform.tsx"/>
  <objectgroup id="3" name="character">
   <object id="1" gid="243" x="78" y="438" width="64" height="64"/>
  </objectgroup>
