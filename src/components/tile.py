@@ -116,9 +116,10 @@ class FallingPlatform(Platform):
     particle_velocity_range = (0.35, 0.45)
     particle_spawn_range = 20
     particle_velocity_range = [0.3, 0.5]
-    particle_exist_timer = 400
+    particle_exist_time = 400
     particle_scale_range = [1, 1.3]
     particle_alpha_range = [50, 100]
+
     def __init__(self,
             position: tuple[float, float],
             images: list[pygame.Surface],
@@ -201,7 +202,7 @@ class FallingPlatform(Platform):
             surface=self.particle_image,
             position=(position, self.rect.bottom),
             veltocity=pygame.Vector2(0, velocity),
-            timer=self.particle_exist_timer,
+            timer=self.particle_exist_time,
             scale=random.uniform(self.particle_scale_range[0], self.particle_scale_range[1]),
             alpha=random.randint(self.particle_alpha_range[0], self.particle_alpha_range[1])
         )

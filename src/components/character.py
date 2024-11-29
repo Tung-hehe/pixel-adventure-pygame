@@ -1,7 +1,11 @@
+import random
+
 from pathlib import Path
 
 import pygame
 
+from .effect import Particle
+from .timer import Timer
 from ..enums import (
     Axis,
     Direction,
@@ -17,8 +21,7 @@ from ..utils import (
 
 class Character(pygame.sprite.Sprite):
 
-    # Constants
-    animation_speed = 20
+    # Movement
     max_velocity = 250
     accerleration = 3
     jump_velocity = 375
@@ -28,11 +31,27 @@ class Character(pygame.sprite.Sprite):
     max_consecutive_jump = 2
     gravity = 1000
     wall_friction = 900
-    image_size = (64, 64)
     hitbox_size = (36, 50)
+
+    # Animation
+    animation_speed = 20
+    image_size = (64, 64)
+
+    # Dust
+    dust_exist_time = 300
+    dust_particle_alpha_delta = 1
+    horizontal_move_dust_particle_scale_range = (1.5, 2)
+    horizontal_move_dust_particle_alpha_range = (225, 255)
+    horizontal_move_dust_spawn_timer = 400
+    horizontal_move_dust_velocity_range = [0.05, 0.08]
+    vertical_move_dust_particle_number = 3
+    vertical_move_dust_particle_scale_range = (0.7, 1.2)
+    vertical_move_dust_particle_alpha_range = (125, 150)
+    vertical_move_dust_velocity_range = [0.03, 0.1]
 
     def __init__(self,
             images: dict[CharacterStatus: dict[Direction, list[pygame.Surface]]],
+            particle_image: pygame.Surface
         ) -> None:
         super().__init__()
         # Render
@@ -62,6 +81,11 @@ class Character(pygame.sprite.Sprite):
         # Status
         self.status = None
         self.facing = Direction.Right
+
+        # Effect
+        self.particle_image = particle_image
+        self.dust = pygame.sprite.Group()
+        self.horizontal_move_dust_spawn_timer = Timer(self.horizontal_move_dust_spawn_timer)
         return None
 
     @classmethod
@@ -128,13 +152,12 @@ class Character(pygame.sprite.Sprite):
                 self.velocity.y = -self.jump_velocity
             else:
                 self.velocity.y = -self.air_jump_velocity
+        self.spawn_jump_dust()
         return None
 
     def horizontal_move(self, dt: float) -> None:
         if not self.wall_jumping:
-            accerleration_sign = (
-                self.accerleration_direction[Direction.Right] - self.accerleration_direction[Direction.Left]
-            )
+            accerleration_sign = (self.accerleration_direction[Direction.Right] - self.accerleration_direction[Direction.Left])
             self.velocity.x += self.accerleration * accerleration_sign
             self.velocity.x = min(abs(self.velocity.x), self.max_velocity) * accerleration_sign
         else:
@@ -186,8 +209,12 @@ class Character(pygame.sprite.Sprite):
             elif self.accerleration_direction[Direction.Left]:
                 self.facing = Direction.Left
         if self.contact_checker[Direction.Bottom]:
+            if self.tracking_rect.bottom != self.hitbox.bottom and self.status == CharacterStatus.Fall:
+                self.spawn_land_dust()
             if self.velocity.x == 0: self.status = CharacterStatus.Idle
-            else: self.status = CharacterStatus.Run
+            else:
+                self.status = CharacterStatus.Run
+                self.spawn_run_dust()
         else:
             if self.velocity.y < 0:
                 if self.jump_counter == 1: self.status = CharacterStatus.Jump
@@ -214,10 +241,74 @@ class Character(pygame.sprite.Sprite):
 
     def update(self, dt: float) -> None:
         self.update_collision_direction_checker_rect()
-        self.rect.midbottom = self.hitbox.midbottom
-        self.tracking_rect.midbottom = self.hitbox.midbottom
         self.update_status()
         self.update_image(dt)
+        self.horizontal_move_dust_spawn_timer.update()
+        self.dust.update()
+        self.rect.midbottom = self.hitbox.midbottom
+        self.tracking_rect.midbottom = self.hitbox.midbottom
+        return None
+
+    def spawn_run_dust(self) -> None:
+        if not self.horizontal_move_dust_spawn_timer.active:
+            if self.facing == Direction.Right:
+                velocity_x = -random.uniform(self.horizontal_move_dust_velocity_range[0], self.horizontal_move_dust_velocity_range[1])
+            else:
+                velocity_x = random.uniform(self.horizontal_move_dust_velocity_range[0], self.horizontal_move_dust_velocity_range[1])
+            velocity_y = -random.uniform(self.horizontal_move_dust_velocity_range[0], self.horizontal_move_dust_velocity_range[1])
+            self.dust.add(Particle(
+                self.particle_image,
+                self.rect.midbottom,
+                pygame.Vector2(velocity_x, velocity_y),
+                self.dust_exist_time,
+                random.uniform(self.horizontal_move_dust_particle_scale_range[0], self.horizontal_move_dust_particle_scale_range[1]),
+                random.uniform(self.horizontal_move_dust_particle_alpha_range[0], self.horizontal_move_dust_particle_alpha_range[1]),
+                self.dust_particle_alpha_delta
+            ))
+            self.horizontal_move_dust_spawn_timer.activate()
+        return None
+
+    def spawn_land_dust(self) -> None:
+        for position, horizontal_direction in [(self.hitbox.bottomright, 1), (self.hitbox.bottomleft, -1)]:
+            for _ in range(self.vertical_move_dust_particle_number):
+                velocity_x = horizontal_direction * random.uniform(self.vertical_move_dust_velocity_range[0], self.vertical_move_dust_velocity_range[1])
+                velocity_y = -random.uniform(self.vertical_move_dust_velocity_range[0], self.vertical_move_dust_velocity_range[1])
+                self.dust.add(Particle(
+                    self.particle_image,
+                    position,
+                    pygame.Vector2(velocity_x, velocity_y),
+                    self.dust_exist_time,
+                    random.uniform(self.vertical_move_dust_particle_scale_range[0], self.vertical_move_dust_particle_scale_range[1]),
+                    random.uniform(self.vertical_move_dust_particle_alpha_range[0], self.vertical_move_dust_particle_alpha_range[1]),
+                    self.dust_particle_alpha_delta
+                ))
+        return None
+
+    def spawn_jump_dust(self) -> None:
+        for position, horizontal_direction in [(self.hitbox.bottomright, 1), (self.hitbox.bottomleft, -1)]:
+            for _ in range(self.vertical_move_dust_particle_number):
+                velocity_x = horizontal_direction * random.uniform(self.vertical_move_dust_velocity_range[0], self.vertical_move_dust_velocity_range[1])
+                velocity_y = -random.uniform(self.vertical_move_dust_velocity_range[0], self.vertical_move_dust_velocity_range[1])
+                self.dust.add(Particle(
+                    self.particle_image,
+                    position,
+                    pygame.Vector2(velocity_x, velocity_y),
+                    self.dust_exist_time,
+                    random.uniform(self.vertical_move_dust_particle_scale_range[0], self.vertical_move_dust_particle_scale_range[1]),
+                    random.uniform(self.vertical_move_dust_particle_alpha_range[0], self.vertical_move_dust_particle_alpha_range[1]),
+                    self.dust_particle_alpha_delta
+                ))
+        for _ in range(self.vertical_move_dust_particle_number):
+            velocity_x = random.uniform(-self.vertical_move_dust_velocity_range[0], self.vertical_move_dust_velocity_range[0])
+            self.dust.add(Particle(
+                self.particle_image,
+                self.hitbox.midbottom,
+                pygame.Vector2(velocity_x, -self.vertical_move_dust_velocity_range[1]),
+                self.dust_exist_time,
+                random.uniform(self.vertical_move_dust_particle_scale_range[0], self.vertical_move_dust_particle_scale_range[1]),
+                random.uniform(self.vertical_move_dust_particle_alpha_range[0], self.vertical_move_dust_particle_alpha_range[1]),
+                self.dust_particle_alpha_delta
+            ))
         return None
 
     def is_collision_with_static_object(self, object_rect: pygame.FRect, direction: Direction) -> bool:
@@ -256,4 +347,5 @@ class Character(pygame.sprite.Sprite):
 
     def draw(self, surface: pygame.Surface) -> None:
         surface.blit(self.image, self.rect.topleft)
+        self.dust.draw(surface)
         return None

@@ -23,6 +23,7 @@ class AnimatedEffect:
             path=path, width=cls.image_size[effect_name][0], height=cls.image_size[effect_name][1]
         )
 
+
 class Particle(pygame.sprite.Sprite):
 
     def __init__(self,
@@ -31,7 +32,8 @@ class Particle(pygame.sprite.Sprite):
             veltocity: pygame.Vector2,
             timer: float,
             scale: float,
-            alpha: int
+            alpha: int,
+            alpha_delta: float = 0,
         ) -> None:
         super().__init__()
         self.image = surface.copy()
@@ -45,6 +47,7 @@ class Particle(pygame.sprite.Sprite):
         self.rect = self.image.get_frect()
         self.rect.center = position
         self.timer.activate()
+        self.alpha_delta = alpha_delta
         return None
 
     @classmethod
@@ -55,6 +58,9 @@ class Particle(pygame.sprite.Sprite):
 
     def update(self) -> None:
         self.rect.center += self.velocity
+        if self.alpha_delta:
+            self.alpha -= self.alpha_delta
+            self.image.set_alpha(self.alpha)
         self.timer.update()
         if not self.timer.active:
             self.kill()

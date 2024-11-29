@@ -12,7 +12,8 @@ from .components import (
 )
 from .enums import (
     BackgroundName,
-    CharacterName
+    CharacterName,
+    ParticleName
 )
 
 
@@ -31,9 +32,9 @@ class Game:
         self.clock = pygame.time.Clock()
         character_images = Character.load_images(self.root_path, random.choice(list(CharacterName)))
         background_image = Background.load_images(self.root_path, random.choice(list(BackgroundName)))
-        player = Character(character_images)
         background = Background(background_image)
         self.map = Map(self.root_path)
+        player = Character(character_images, self.map.objects_images['particle'][ParticleName.Dust])
         self.map.setup(self.start_map, player, background)
         return None
 
