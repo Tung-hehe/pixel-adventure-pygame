@@ -38,16 +38,17 @@ class Character(pygame.sprite.Sprite):
     image_size = (64, 64)
 
     # Dust
-    dust_exist_time = 300
-    dust_particle_alpha_delta = 1
-    horizontal_move_dust_particle_scale_range = (1.5, 2)
-    horizontal_move_dust_particle_alpha_range = (225, 255)
-    horizontal_move_dust_spawn_timer = 400
-    horizontal_move_dust_velocity_range = [0.05, 0.08]
-    vertical_move_dust_particle_number = 3
-    vertical_move_dust_particle_scale_range = (0.7, 1.2)
-    vertical_move_dust_particle_alpha_range = (125, 150)
-    vertical_move_dust_velocity_range = [0.03, 0.1]
+    dust_exist_time = 250
+    dust_particle_alpha_range = (80, 120)
+    dust_particle_number = 2
+    run_dust_spawn_timer = 400
+    run_dust_particle_scale_range = (0.7, 1.5)
+    run_dust_velocity_range = [0.02, 0.07]
+    land_dust_particle_scale_range = (0.7, 1.2)
+    land_dust_velocity_range = [0.03, 0.07]
+    jump_dust_particle_scale_range = (0.7, 1.2)
+    jump_dust_velocity_x_range = [0.01, 0.04]
+    jump_dust_velocity_y_range = [0.03, 0.12]
 
     def __init__(self,
             images: dict[CharacterStatus: dict[Direction, list[pygame.Surface]]],
@@ -85,7 +86,7 @@ class Character(pygame.sprite.Sprite):
         # Effect
         self.particle_image = particle_image
         self.dust = pygame.sprite.Group()
-        self.horizontal_move_dust_spawn_timer = Timer(self.horizontal_move_dust_spawn_timer)
+        self.run_dust_spawn_timer = Timer(self.run_dust_spawn_timer)
         return None
 
     @classmethod
@@ -243,71 +244,68 @@ class Character(pygame.sprite.Sprite):
         self.update_collision_direction_checker_rect()
         self.update_status()
         self.update_image(dt)
-        self.horizontal_move_dust_spawn_timer.update()
+        self.run_dust_spawn_timer.update()
         self.dust.update()
         self.rect.midbottom = self.hitbox.midbottom
         self.tracking_rect.midbottom = self.hitbox.midbottom
         return None
 
     def spawn_run_dust(self) -> None:
-        if not self.horizontal_move_dust_spawn_timer.active:
-            if self.facing == Direction.Right:
-                velocity_x = -random.uniform(self.horizontal_move_dust_velocity_range[0], self.horizontal_move_dust_velocity_range[1])
-            else:
-                velocity_x = random.uniform(self.horizontal_move_dust_velocity_range[0], self.horizontal_move_dust_velocity_range[1])
-            velocity_y = -random.uniform(self.horizontal_move_dust_velocity_range[0], self.horizontal_move_dust_velocity_range[1])
-            self.dust.add(Particle(
-                self.particle_image,
-                self.rect.midbottom,
-                pygame.Vector2(velocity_x, velocity_y),
-                self.dust_exist_time,
-                random.uniform(self.horizontal_move_dust_particle_scale_range[0], self.horizontal_move_dust_particle_scale_range[1]),
-                random.uniform(self.horizontal_move_dust_particle_alpha_range[0], self.horizontal_move_dust_particle_alpha_range[1]),
-                self.dust_particle_alpha_delta
-            ))
-            self.horizontal_move_dust_spawn_timer.activate()
+        if not self.run_dust_spawn_timer.active:
+            for _ in range(self.dust_particle_number):
+                if self.facing == Direction.Right:
+                    velocity_x = -random.uniform(self.run_dust_velocity_range[0], self.run_dust_velocity_range[1])
+                else:
+                    velocity_x = random.uniform(self.run_dust_velocity_range[0], self.run_dust_velocity_range[1])
+                velocity_y = -random.uniform(self.run_dust_velocity_range[0], self.run_dust_velocity_range[1])
+                self.dust.add(Particle(
+                    self.particle_image,
+                    self.rect.midbottom,
+                    pygame.Vector2(velocity_x, velocity_y),
+                    self.dust_exist_time,
+                    random.uniform(self.run_dust_particle_scale_range[0], self.run_dust_particle_scale_range[1]),
+                    random.uniform(self.dust_particle_alpha_range[0], self.dust_particle_alpha_range[1]),
+                ))
+            self.run_dust_spawn_timer.activate()
         return None
 
     def spawn_land_dust(self) -> None:
         for position, horizontal_direction in [(self.hitbox.bottomright, 1), (self.hitbox.bottomleft, -1)]:
-            for _ in range(self.vertical_move_dust_particle_number):
-                velocity_x = horizontal_direction * random.uniform(self.vertical_move_dust_velocity_range[0], self.vertical_move_dust_velocity_range[1])
-                velocity_y = -random.uniform(self.vertical_move_dust_velocity_range[0], self.vertical_move_dust_velocity_range[1])
+            for _ in range(self.dust_particle_number):
+                velocity_x = horizontal_direction * random.uniform(self.land_dust_velocity_range[0], self.land_dust_velocity_range[1])
+                velocity_y = -random.uniform(self.land_dust_velocity_range[0], self.land_dust_velocity_range[1])
                 self.dust.add(Particle(
                     self.particle_image,
                     position,
                     pygame.Vector2(velocity_x, velocity_y),
                     self.dust_exist_time,
-                    random.uniform(self.vertical_move_dust_particle_scale_range[0], self.vertical_move_dust_particle_scale_range[1]),
-                    random.uniform(self.vertical_move_dust_particle_alpha_range[0], self.vertical_move_dust_particle_alpha_range[1]),
-                    self.dust_particle_alpha_delta
+                    random.uniform(self.land_dust_particle_scale_range[0], self.land_dust_particle_scale_range[1]),
+                    random.uniform(self.dust_particle_alpha_range[0], self.dust_particle_alpha_range[1]),
                 ))
         return None
 
     def spawn_jump_dust(self) -> None:
         for position, horizontal_direction in [(self.hitbox.bottomright, 1), (self.hitbox.bottomleft, -1)]:
-            for _ in range(self.vertical_move_dust_particle_number):
-                velocity_x = horizontal_direction * random.uniform(self.vertical_move_dust_velocity_range[0], self.vertical_move_dust_velocity_range[1])
-                velocity_y = -random.uniform(self.vertical_move_dust_velocity_range[0], self.vertical_move_dust_velocity_range[1])
+            for _ in range(self.dust_particle_number):
+                velocity_x = horizontal_direction * random.uniform(self.jump_dust_velocity_x_range[0], self.jump_dust_velocity_x_range[1])
+                velocity_y = -random.uniform(self.jump_dust_velocity_y_range[0], self.jump_dust_velocity_y_range[1])
                 self.dust.add(Particle(
                     self.particle_image,
                     position,
                     pygame.Vector2(velocity_x, velocity_y),
                     self.dust_exist_time,
-                    random.uniform(self.vertical_move_dust_particle_scale_range[0], self.vertical_move_dust_particle_scale_range[1]),
-                    random.uniform(self.vertical_move_dust_particle_alpha_range[0], self.vertical_move_dust_particle_alpha_range[1]),
-                    self.dust_particle_alpha_delta
+                    random.uniform(self.jump_dust_particle_scale_range[0], self.jump_dust_particle_scale_range[1]),
+                    random.uniform(self.dust_particle_alpha_range[0], self.dust_particle_alpha_range[1]),
                 ))
-        for _ in range(self.vertical_move_dust_particle_number):
-            velocity_x = random.uniform(-self.vertical_move_dust_velocity_range[0], self.vertical_move_dust_velocity_range[0])
+        for _ in range(self.dust_particle_number):
+            velocity_x = random.uniform(-self.jump_dust_velocity_x_range[0], self.jump_dust_velocity_x_range[0])
             self.dust.add(Particle(
                 self.particle_image,
                 self.hitbox.midbottom,
-                pygame.Vector2(velocity_x, -self.vertical_move_dust_velocity_range[1]),
+                pygame.Vector2(velocity_x, -self.jump_dust_velocity_y_range[1]),
                 self.dust_exist_time,
-                random.uniform(self.vertical_move_dust_particle_scale_range[0], self.vertical_move_dust_particle_scale_range[1]),
-                random.uniform(self.vertical_move_dust_particle_alpha_range[0], self.vertical_move_dust_particle_alpha_range[1]),
-                self.dust_particle_alpha_delta
+                random.uniform(self.jump_dust_particle_scale_range[0], self.jump_dust_particle_scale_range[1]),
+                random.uniform(self.dust_particle_alpha_range[0], self.dust_particle_alpha_range[1]),
             ))
         return None
 

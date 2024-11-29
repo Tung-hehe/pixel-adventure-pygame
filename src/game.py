@@ -55,7 +55,6 @@ class Game:
                     if event.key == pygame.K_ESCAPE: self.quit()
                     if event.key in [pygame.K_a, pygame.K_d, pygame.K_s, pygame.K_w]:
                         self.map.handle_input_event(event)
-            self.screen.fill('black')
             self.map.update(dt)
             self.map.draw(self.screen)
             pygame.display.update()
